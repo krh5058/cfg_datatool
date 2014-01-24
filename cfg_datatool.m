@@ -1,3 +1,14 @@
+global CFG
+
+if isfield(CFG,'tbactive')
+    if CFG.tbactive
+        if CFG.debug
+            disp('cfg_datatool Debug: Toolbox already active.');
+        end
+        return;
+    end
+end
+
 % ILAB = ilabGetILAB;
 AP = ilabGetAnalysisParms;
 % PP = ilabGetPlotParms;
@@ -8,9 +19,8 @@ if isempty(AP.saccade.list) | isempty(AP.saccade.table)
     return;
 end
 
-cfgInit;
-
-global CFG
+% Initialize Global Parameters
+cfgParams('init');
 
 % took out plotParms.XYPLOT_TAG; plotParms.PUPILPLOT_TAG
 % AXES_TAGS = {PP.PCA_TAG; PP.IMG_TAG; PP.CPA_TAG; PP.APA_TAG; 'annotAx'; 'APATMP'};
@@ -34,6 +44,8 @@ if isempty(cfgWinMenuHdl)
     uimenu(f, 'Label', 'cfg_datatool',   'Enable', 'on',...
         'Tag', CFG.CFG_TAGS{1}, 'Callback','cfgShow');
 end
+
+cfgShow;
 
 % [W H] = ilabGetILABCoord;    
     
