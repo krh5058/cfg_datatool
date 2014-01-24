@@ -1,0 +1,29 @@
+Issues at hand:
+1) I need to know if you are only expecting 1 inital/final saccade per trial.  This is important in terms of latency calculations.  RT reference for initial saccade = End of Delay.  RT reference for final saccade = Start of Feedback.  Also, it's important so UI display, analysis, plotting, and export uses only 2 sets of mutually exclusive saccade data.
+- Although we did not settle on the variable "Number of Corrective Saccades", I know you were previously thinking about it.  It is possible to add this as an additional number output, and still retain the 1:1:1 (initial:final:trial) ratio.
+2) I'd like to know if you have any upcoming deadlines I can base my progress on.  Reasons being so I can balance my workload, organize dates to deliver milestones, and give you a frame of reference for how long each step of the development cycle will take.
+3) I also would like to outline the process toward how I am working on the project, since I imagine it's somewhat of a mystery.  The steps--at least in my mind--proceed as specification, design, development, implementation, and maintenance.  At each step, I need feedback to make sure things are moving in the right direction.  (So far, you guys have been great collaborators.)  Currently, we have settled most of the design (outside of analysis and output), and I am moving forward so that the toolbox actually functions accordingly.  We may need to revisit some components, so I'll require your patience.  This is probably one of the larger projects I've undertaken, and I'd like maintain this iterative approach so that everything falls in place where (and when) they need to be.  In my experience, more time is usually spent when trying to map out the course of a project.  With more refined details, I usually can proceed to code without guesswork.  So, at this stage, I'll be able to accelerate the turnover of these milestones.
+4) You can track my progress at: https://github.com/krh5058/cfg_datatool.  I will keep copies of these reports in a folder called "project_notes", alongside with the actual Matlab code.
+
+Meeting brief:
+- Presented contingency of 1 unique inital saccade and 1 unique final saccade.
+- Agreed upon work space environment (multiple screens, UI size).
+- Pitched cfg_datatool separation from original saccade dataset.  Agreed upon.
+- Presented current UI items and reviewed possible modifications.
+- Discussed saccade analysis workflow options (Add New, Select Saccade, and Modify Saccade) and confirmed user efficiency.
+- Agreed upon expectations for visual plotting
+- Notified of factors in terms of deadlines
+
+Primary Milestones:
+- Implement saccade analysis functions: Add new, Select Saccade, Modify Saccade
+- Adjust data table headers to meet output specs
+- Format data tables
+- Refine menu bar items
+- Add Drop/Error function
+- Deliver new UI mock-up and demonstrate usage in current state.
+
+Secondary Milestones
+- Sort out requirements for plotting functions
+- Adjust data and parameter export
+- Write algorithms for latency and distance calculations
+- Organize analysis documentation, include as help text

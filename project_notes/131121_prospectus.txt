@@ -1,0 +1,54 @@
+11/21/13
+
+Project: Eye tracking data visualization and analysis tool
+Contact: Charles Geier <geiercf@gmail.com>, Nicole Roberts <nicolejamily@gmail.com>
+Consulting role: Lead software development
+
+Project overview: 
+The project aims to create a post-processing tool for visualization and analysis of data collected in a visual working memory experimental paradigm.  Data of interest is behavioral in nature, and is captured with ASL's eye-tracking package in tandem with an E-prime stimulus presentation.  Research goals require organization and manipulation automation largely directed by user-defined parameters through inspection.  As such, development will center around a user-friendly interface for data manipulation and analysis according to client specifications.  Back-end data handling will include custom scientific calculations, organization into experimentally-defined tiers, and a model-view-controller architecture catered to business (research) logic.
+
+Prospective approach:
+The project intends to provide support within a currently implemented experimental procedure, and is founded from an intention to increase efficiency in workflow, as well as maintain quality control of analyses.  Focus of consultations will involve thorough understanding of present algorithms performed in ILAB (an open-source Matlab package), distinctions in the user-group's information processing associated with .eyd files, and necessary performance benchmarks among other custom analytic requests.  Under these constraints, an agile development method is proposed.  An interactive client-developer relationship has been agreed upon by both parties.  Milestones will be met by a prototype tailored to client projection in an iterative manner.
+
+Preliminary assessment:
+- Trial sequence:
+1) Fixation appears in center.  Participant focuses on fixation.
+2) Fixation remains on screen and a dot appears on either the left or right of the fixation.  Participant focuses on fixation.
+3) Fixation and dot disappear.  Participant focuses on location of dot prior to disappearance.
+4) Dot reappears.  Participant adjusts focus on dot.
+5) Fixation reappears and dot disappears.
+- ASL eye-tracking provides eye gaze coordinate information in pixels.
+- A primary saccade occurs at trial sequence #3.  Following saccades occur, as well as a final saccade at trial sequence #4 which represents stabilization.
+- E-prime performs stimulus presentation of trial sequences, and exports time stamps for events of interest to append to ASL .eyd data.  Time stamps are represented in terms of "codes", which hold metadata information in terms of experimental conditions as well as trial sequence onsets.
+- Current data processing involves exporting .eyd data to ILAB, an eye-tracking data processing package.  ILAB is capable of defining a saccade event under certain threshold parameters, as well as plotting a time course and visual trace of the eye tracking data.  However, due to erroneous eye-tracking data collection and measurement inconsistencies, saccade definitions are not as accurate as expected.
+
+Project goals:
+- Develop a software visualization and data manipulation tool for analytical purposes.
+- Replicate ILAB plot analysis with an interface so users can define windows representing initial and final saccade.
+- Entry of number saccades.
+- Entry of false alarms.
+- Evaluate performance, accuracy, and precision of a saccades within trial.
+- Measure initial and final saccade accuracy in terms of distance in visual degrees.
+- Measure precision of all saccades following trial sequence #3 in terms of distance in visual degrees.
+- Provide measures for latency and velocity.
+- Output calculations according to client specifications.
+- Categorize data according to experimental parameters.
+- Implement in lab environment.
+
+Primary milestones:
+- Meet specifications of analytical measures with descriptive technical calculations.
+- Reproduce ILAB eye-tracking data processing.
+- Map out a general depiction of work flow and data organization.
+
+Secondary milestones:
+- Composition of a user-interface for evaluation.
+
+Necessary materials:
+- Output specifications in CSV/Excel with provided description of requested measures.
+- Example .eyd data set.
+- E-prime time stamp code reference table.
+- Structured description of experimental conditions, preferably tiered from higher to lower order.
+
+Tools:
+- Development: Matlab (R2011b) and Java (1.7+)
+- Version control: Git (https://github.com/krh5058)

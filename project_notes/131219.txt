@@ -1,0 +1,57 @@
+12/19/13
+
+Project Goals:
+
+Prospective
+- Develop a software visualization and data manipulation tool for analytical purposes.
+- Replicate ILAB plot analysis with an interface so users can define windows representing initial and final saccade.
+- Entry of number saccades.
+- Entry of false alarms.
+- Evaluate performance, accuracy, and precision of a saccades within trial.
+- Measure initial and final saccade accuracy in terms of distance in visual degrees.
+- Measure precision of all saccades following trial sequence #3 in terms of distance in visual degrees.
+- Provide measures for latency and velocity.
+- Output calculations according to client specifications.
+- Categorize data according to experimental parameters.
+- Implement in lab environment.
+
+Meeting brief
+- Finer-tuned output specifications.
+- Examination and modification of add-on mock-up.
+- Determine analysis procedure and UI manipulation of saccades.
+- Analysis specifications.  Aggregate analysis approach and categorization.
+- Initial vs. final saccade data organization.
+- Trial events breakdown.
+
+Current primary:
+- Move and adjust plot control area (PCA) constrained UI items to saccade data table.  Saccade table is generated after data is converted and analyzed (“Analysis” > “Saccades…”)
+- Add/Modify Initial Saccade
+- Add/Modify Final Saccade
+- Export Initial Saccade (to data table)
+- Export Final Saccade (to data table)
+- Dropped trial specification
+- Error trial specification
+- Add-on UI items functionality are supplementary controls for ILAB’s automated saccade detection algorithm.  After saccades populate the saccade data table and provide visual highlighting of time series plots, users can add an initial or final saccade -- if not captured by default thresholds -- to the table.  Or, they can modify a previously defined saccade by selecting the row of interest.  In either case, slider controls will appear underneath the auxiliary plot axes for manual saccade definition.
+- Allow for the possibility of saccade data to be missing (“N/A”)
+- Slider controls will have extended lines to provide visual overlap across “x vs. t” and “y vs. t” plots.
+- Initial and final saccade, upon selection, will be exported to their own respective data tables.  Trials will have, at most, one unique initial and final saccade.
+- Data output will largely emulate the formatting of “Analysis” > “Save results as text”.  Suggested column format (subject to modification) is as follows:
+- Trial
+- Start Code
+- Target Code
+- Trial Type
+- Start (ms)
+- End (ms)
+- peak vel
+- mean vel
+- time-to-peak (ms)
+- latency (initial, ms)
+- latency (final, ms)
+- distance from dot (offset of initial saccade, pix)
+- distance from dot (offset of final saccade, pix)
+- Latency, relative distances, target code, and trial type data will hinge on supplementary experimental parameters (provided but applicable to change).
+
+Current secondary:
+- Aggregate analyses will organize averages of dependent variables (latency, accuracy/distance) by condition X location.  Condition and location may vary across experimental parameters, but the current WM data set will act as a prototypical breakdown.  
+- Aggregate analyses will appear in same output file as by-trial data.
+- Provide visual distinctions of trial events on “x vs. t” and “y vs. t” plots.  Particularly, the target code currently corresponds with dot appearance, which is irrelevant to analytical procedures.  Delay duration offset and feedback period are of greater importance.
