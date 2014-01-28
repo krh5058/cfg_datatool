@@ -1,5 +1,8 @@
 function cfgModifyCB
-    disp('cfg: Modify Callback');
+
+    if CFG.debug
+        fprintf('cfg: Modify Callback');
+    end
     
     % -----------------------------------------
     % Get acquisition interval
