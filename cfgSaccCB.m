@@ -20,11 +20,7 @@ function cfgSaccCB(action)
     switch action
         case 'select'
             
-            % Restricting autoplot functions
-            hAP = findobj('Tag','PLOT_SACCAUTO'); % Auto-plot checkbox
-            auto_val = get(hAP,'Value'); % Old auto-plot value
-            set(hAP,'Value',1); % Force auto-plotting
-            set(hAP,'Enable','off'); % Turn off ability to change this option.
+            cfgILABSecure('apoff');
             
             set(hSL,'Callback', @addSelectCB); % Set new callback
             figure(hST); % Bring SaccadeTable to front
@@ -96,18 +92,17 @@ function cfgSaccCB(action)
                 return;
             end
             
-            acqIntvl = ilabGetAcqIntvl;
-            
             AP = ilabGetAnalysisParms;
             
             % Get trials and selected saccade index
             selsacc = AP.saccade.list(selection,:); % Temp
-            selsacc(3) = selsacc(3)*acqIntvl; % Temp
-            selsacc(4) = selsacc(4)*acqIntvl; % Temp
+            selsacc(3) = selsacc(3)*CFG.acqIntvl; % Temp
+            selsacc(4) = selsacc(4)*CFG.acqIntvl; % Temp
                         
             saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %4d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1:4)), ...
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
+            
             switch saccif
                 case 'Initial'
                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
@@ -117,12 +112,15 @@ function cfgSaccCB(action)
                     return;
             end 
             
-            CFG.(lower(saccif)).list = AP.saccade.list(selection,:); % Old column format
-%             hCFG = findobj('Tag',CFG.CFG_TAGS{2});
+            cfgParams('setsacc',saccif,selsacc(1),selsacc); % Set saccade data with cfgParams('setsacc') call
+%             CFG.(lower(saccif)).list(selsacc(1),:) = AP.saccade.list(selection,:); % Old column format
+            %             hCFG = findobj('Tag',CFG.CFG_TAGS{2});
             
+            cfgILABSecure('apOn'); % Assuming apOff prior to this function call
+
             if CFG.debug
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade: \n');
-                fprintf([CFG.fmtStr '\n'],selsacc);
+                fprintf([CFG.ILABfmtStr '\n'],selsacc);
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Trial: %4d\n', selsacc(1));
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade Type: %s\n', saccif);
             end
