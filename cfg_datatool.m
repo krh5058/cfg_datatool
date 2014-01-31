@@ -3,7 +3,7 @@ global CFG
 if isfield(CFG,'tbactive')
     if CFG.tbactive
         if CFG.debug
-            disp('cfg_datatool Debug: Toolbox already active.');
+            fprintf('cfg_datatool: Toolbox already active.');
         end
         return;
     end

@@ -38,7 +38,8 @@ end
         hAP = findobj('Tag','PLOT_SACCAUTO'); % Auto-plot checkbox
         set(hAP,'Value',get(hAP,'UserData')); % Old auto-plot value, from UserData
         set(hAP,'UserData',[]); % Clear UserData
-        set(hAP,'Enable','on'); % Turn off ability to change this option.
+        set(hAP,'Enable','on'); % Turn on ability to change this option.
+        ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
     end
 
 end

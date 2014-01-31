@@ -105,16 +105,16 @@ function cfgSaccCB(action)
             
             switch saccif
                 case 'Initial'
-                    hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
+%                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
                 case 'Final'
-                    hCFGLB = findobj('Tag',CFG.CFG_TAGS{13});
+%                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{13});
                 otherwise
                     return;
             end 
             
             cfgParams('setsacc',saccif,selsacc(1),selsacc); % Set saccade data with cfgParams('setsacc') call
-%             CFG.(lower(saccif)).list(selsacc(1),:) = AP.saccade.list(selection,:); % Old column format
-            %             hCFG = findobj('Tag',CFG.CFG_TAGS{2});
+
+            cfgShow;
             
             cfgILABSecure('apOn'); % Assuming apOff prior to this function call
 

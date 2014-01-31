@@ -225,8 +225,22 @@ figure(cfgWinHdl);
             fprintf('cfgShow (tableEditCB): New data of class %s is now %i.\n',class(evt.NewData),evt.NewData);
         end
         
-        cfgParams('set',CFG.cfgHeaders{evt.Indices(2)},evt.Indices(1),evt.NewData); % Drop/Error vectors
-        cfgShow;
+        saccif = regexp(get(src,'Tag'),'INIT|FIN','match');
+        saccif = saccif{1};
+        
+        switch saccif
+            case 'INIT'
+                saccif = 'Initial';
+            case 'FIN'
+                saccif = 'Final';
+            otherwise
+                if CFG.debug
+                    fprintf('cfgShow (tableEditCB): Source tag identifier unknown.\n');
+                end
+        end
+        
+        cfgParams('set',CFG.cfgHeaders{evt.Indices(2)},evt.Indices(1),evt.NewData); % Drop/Error 
+        cfgParams('set',saccif,evt.Indices,evt.NewData);
     end
 
 end
