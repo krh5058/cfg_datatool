@@ -1,0 +1,47 @@
+Update for cfg_datatool (2/3/14)
+
+Issues at hand:
+1) I need to know if drop/error functions apply to the entire trial.  Currently, if you drop/error a trial, I am considering both initial and final saccades to be dropped/error-ed.
+2) I would like to know your monitor resolutions (multiple) for whichever computer you end up using this UI on.  Let me know if you need assistance in locating that information.
+3) I am using a Matlab-type data table to display your data.  Matlab is great for quick-and-easy displays.  However, I'm hitting an interface roadblock, where the table that is displayed is limited in many ways (e.g can't perform task-specific functions by right/left-clicking, can't click the entire row, etc.)  If you use Microsoft Excel as a reference, this table is much less competent.  As a consequence, I will pursue two paths to resolve this issue.  One, I will implement the functions required with the upper menu-bar (Saccade > Modify > Specify Trial) that Matlab is very compatible with.  Two, I will open up the underlying Java code (Matlab displays are built on Java) and adjust it so that the table is more user-friendly.  Seeing as how the purpose of this tool is to save time, I would not want you to have to go to the menu-bar every time you need to manipulate a saccade.  I predict this would save a considerable amount of time per saccade.  I am saying this because software (such as Matlab) typically does not readily allow programmers to do this, unless they know what they are doing.  Java is packaged underneath Matlab, and those functions are typically masked to Matlab users.  If I tinker around and through a great amount of trial-and-error, I don't see why I shouldn't be able to make these adjustments.  However, in parallel, I will still develop the functionality through the menu-bars so end-goal progress is still being made.
+4) I am nearing the point at which I can import trial data, so that I can perform latency and distance calculations.  As well as, applying analysis-related parameters ("Trial type"/"Trial code") to saccade information.  In order for data import to be as smooth as possible, I will outline the specifications for the trial data and relay them to you once I am ready.
+5) Please see this video for a visual description of the project in its current state: https://drive.google.com/file/d/0B4FMN-oDEE80ekFzR3F1M0RQdTg/edit?usp=sharing
+
+Completed:
+- Added menu-bar skeleton
+- Formatted CFG-related saccade data table and headers.  Columns are:
+'Start Code'
+'Target Code'
+'Trial Type'
+'Start (ms)'
+'End (ms)'
+'Peak vel (deg/s)'
+'Mean vel (deg/s)'
+'SRT (ms)'
+'Time-to-peak (ms)'
+'Latency (ms)'
+'Distance'
+'Drop'
+'Error'
+- Added adjustable Drop/Error columns
+- Added "Select Saccade" function.
+- Implemented various UI functions for compatibility and usage
+- Prevent toolbox use without auto-saccade analysis
+- Allowed for auto-plotting during selection procedure
+- Added General and Trial info descriptions
+
+Primary Milestones:
+- Implement saccade analysis functions: Add new, Modify saccade
+- Add slider-effects to plot window.
+- Synchronize plot window trial with saccade selections.
+- Adjust data table with more in-depth Java functions for better interface experience
+- Implement trial parameters import, relay specs to client
+- Write algorithms for latency and distance calculations
+- Deliver new UI mock-up and demonstrate usage in current state.
+
+Secondary Milestones
+- Sort out requirements for plotting functions
+- Adjust data and parameter export
+- Add Save/Load CFG parameter functionality
+- Populate General/Trial info with more relevant data
+- Organize analysis documentation, include as help text

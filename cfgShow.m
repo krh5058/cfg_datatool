@@ -150,7 +150,8 @@ if isempty(cfgWinHdl)
         'ColumnFormat', CFG.cfgFormat,...
         'ColumnEditable', CFG.cfgEditTable,...
         'ColumnWidth',CFG.cfgColWidth,...
-        'CellEditCallback',@tableEditCB);
+        'CellEditCallback',@tableEditCB,...
+        'ButtonDownFcn',@uiTblCB);
     
     hFinalTable = uitable(cfgWinHdl,...
         'Tag', CFG.CFG_TAGS{13},...
@@ -160,7 +161,8 @@ if isempty(cfgWinHdl)
         'ColumnFormat', CFG.cfgFormat,...
         'ColumnEditable', CFG.cfgEditTable,...
         'ColumnWidth',CFG.cfgColWidth,...
-        'CellEditCallback',@tableEditCB);
+        'CellEditCallback',@tableEditCB,...
+        'ButtonDownFcn',@uiTblCB);
     
     CFG.handles.hLui = [hInitialHeader hFinalHeader hInitialTable hFinalTable];
     
@@ -227,6 +229,14 @@ figure(cfgWinHdl);
         
         cfgParams('set',CFG.cfgHeaders{evt.Indices(2)},evt.Indices(1),evt.NewData); % Drop/Error vectors
         cfgShow;
+    end
+
+    function uiTblCB(src,evt)
+        dblclick = get(get(src,'Parent'),'SelectionType');
+        fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
+        
+%         jscroll = findjobj(CFG.handles.hLui(3));
+%         jtable = jscroll.getViewport.getView;
     end
 
 end
