@@ -42,7 +42,7 @@ if isempty(cfgWinHdl)
     
     m_sacc = uimenu(cfgWinHdl, 'Label', 'Saccade', 'Tag', CFG.CFG_MTAGS{3}{1});
     uimenu(m_sacc, 'Label', 'Select', 'Tag', CFG.CFG_MTAGS{3}{2}, 'Callback','cfgSaccCB(''select'')');
-    uimenu(m_sacc, 'Label', 'Add', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','');
+    uimenu(m_sacc, 'Label', 'Add', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''add'')');
     uimenu(m_sacc, 'Label', 'Modify', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','');
     uimenu(m_sacc, 'Label', 'Drop', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{3}{5},'Callback','');
     uimenu(m_sacc, 'Label', 'Error', 'Tag', CFG.CFG_MTAGS{3}{6},'Callback','');
@@ -234,9 +234,13 @@ figure(cfgWinHdl);
     function uiTblCB(src,evt)
         dblclick = get(get(src,'Parent'),'SelectionType');
         fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
+        coord = get(get(src,'Parent'),'CurrentPoint');
+        fprintf('cfgShow (uiTblCB) -- Selected coordinates: %3.1f %3.1f \n', coord(1), coord(2));
         
-%         jscroll = findjobj(CFG.handles.hLui(3));
-%         jtable = jscroll.getViewport.getView;
+        
+        jscroll = findjobj(src);
+        jtable = jscroll.getViewport.getView;
+        view = get(jscroll.getComponent(0).getView.getModel);
     end
 
 end

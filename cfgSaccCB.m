@@ -17,17 +17,62 @@ function cfgSaccCB(action)
     hST = findobj('Tag',TBL_TAG);
     hSL = findobj('Tag',LB_TAG);    
  
+    % UI secure and callback routines
+    
+    if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData')) % Restrict to one saccade function at a time
+        % Warning
+        disp('warning');
+        return;
+    else
+        set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',action);
+    end
+    
     switch action
         case 'select'
             
-            cfgILABSecure('apoff');
+            if CFG.debug
+                fprintf('cfgSaccCB: Select saccade request.\n');
+            end
+            
+            cfgUISecure('apForceOn');
             
             set(hSL,'Callback', @addSelectCB); % Set new callback
             figure(hST); % Bring SaccadeTable to front
             
         case 'add'
             
+            if CFG.debug
+                fprintf('cfgSaccCB: Add new saccade request.\n');
+            end
+            
+            cfgUISecure('rowselect');
+            
+            % Set new callbacks
+            jscrollInit = findjobj(CFG.handles.hLui(3));
+            jtableInit = jscrollInit.getViewport.getView;
+            hJTableInit = handle(jtableInit, 'CallbackProperties');
+            set(hJTableInit, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(3)});
+%             set(CFG.handles.hLui(3),'CellSelectionCallback', @addNewCB); % Set new callback
+            
+            jscrollFin = findjobj(CFG.handles.hLui(4));
+            jtableFin = jscrollFin.getViewport.getView;
+            hJTableFin = handle(jtableFin, 'CallbackProperties');
+            set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
+%             set(CFG.handles.hLui(4),'CellSelectionCallback', @addNewCB); % Set new callback
+            
         case 'modify'
+                        
+            if CFG.debug
+                fprintf('cfgSaccCB: Modify saccade request.\n');
+            end
+            
+            cfgUISecure('rowselect');
+            
+        case 'clear'
+                        
+            if CFG.debug
+                fprintf('cfgSaccCB: Clear saccade request.\n');
+            end
             
         otherwise
             if CFG.debug
@@ -116,7 +161,8 @@ function cfgSaccCB(action)
 
             cfgShow;
             
-            cfgILABSecure('apOn'); % Assuming apOff prior to this function call
+            cfgUISecure('apReturn'); % Assuming apForceOn prior to this function call
+            cfgUISecure('clearsaccaction'); % Free UI from function restrictions
 
             if CFG.debug
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade: \n');
@@ -127,6 +173,48 @@ function cfgSaccCB(action)
                     
         elseif strcmp(dblclick, 'normal') % Single click will continue to plot
             ilabPlotSaccade;
+        end
+    end
+
+    function addDblClickCB(src,evt,currTbl)
+        %         dblclick = get(get(currTbl,'Parent'),'SelectionType');
+        persistent dblclick selected
+        
+        if isempty(dblclick)
+            dblclick = tic;        
+            selected = src.getSelectedRows;
+            action = false;
+        else
+            try
+                if toc(dblclick) < .75 && selected == src.getSelectedRows;
+                    action = true;
+                else
+                    dblclick = [];
+                    action = false;
+                end
+            catch ME % Exceptions are expensive
+                if strcmp(ME.identifier, 'MATLAB:nonLogicalConditional') || strcmp(ME.identifier, 'MATLAB:dimagree')
+                else
+                    fprintf('cfgSaccCB (addNewCB): %s\n',ME.message);
+                    throw(ME)
+                end
+                dblclick = [];
+                action = false;
+            end
+        end
+        
+        %         if strcmp(dblclick, 'open') % Restrict to double clicking for confirmation
+        if action
+           dblclick = [];
+           disp('dblclick')
+           
+           selcol = get(currTbl,'ColumnName');
+           
+           if any(strcmpi(selcol(src.getSelectedColumns+1),{'Drop','Error'})) % Ignore
+           else
+               disp(src.getSelectedRows+1);
+               cfgUISecure('clearsaccaction'); % Free UI from function restrictions
+           end
         end
     end
 end
