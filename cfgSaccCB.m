@@ -52,13 +52,11 @@ function cfgSaccCB(action)
             jtableInit = jscrollInit.getViewport.getView;
             hJTableInit = handle(jtableInit, 'CallbackProperties');
             set(hJTableInit, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(3)});
-%             set(CFG.handles.hLui(3),'CellSelectionCallback', @addNewCB); % Set new callback
             
             jscrollFin = findjobj(CFG.handles.hLui(4));
             jtableFin = jscrollFin.getViewport.getView;
             hJTableFin = handle(jtableFin, 'CallbackProperties');
             set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
-%             set(CFG.handles.hLui(4),'CellSelectionCallback', @addNewCB); % Set new callback
             
         case 'modify'
                         
@@ -212,8 +210,24 @@ function cfgSaccCB(action)
            
            if any(strcmpi(selcol(src.getSelectedColumns+1),{'Drop','Error'})) % Ignore
            else
-               disp(src.getSelectedRows+1);
-               cfgUISecure('clearsaccaction'); % Free UI from function restrictions
+               if CFG.debug
+                   fprintf(['cfgSaccCB (addDblClickCB): Selected row -- %i\n'], (src.getSelectedRows+1));
+               end
+               set(currTbl,'UserData',(src.getSelectedRows+1));
+               request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
+               switch request
+                   case 'add'
+                       if CFG.debug
+                           fprintf(['cfgSaccCB (addDblClickCB): Current request -- %s\n'], request);
+                       end
+                       cfgAddNew;
+                   otherwise
+                       if CFG.debug
+                           fprintf(['cfgSaccCB (addDblClickCB): Request unknown -- %s\n'], request);
+                       end
+               end
+               src.clearSelection; % Clear selected row
+               cfgUISecure('clearuitablecb'); % Clear UI table callbacks (Nested function removing itself).
            end
         end
     end
