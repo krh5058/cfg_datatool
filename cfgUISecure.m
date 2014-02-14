@@ -1,5 +1,5 @@
 function cfgUISecure(action)
-% Misc UI handling
+% Switchyard for misc UI handling
 
 global CFG
 
@@ -14,6 +14,10 @@ switch lower(action)
         apForceOff;
     case 'apreturn';
         apReturn;
+    case 'mainuioff'
+        mainUIOff;
+    case 'mainuion'
+        mainUIOn;
     case 'rowselect';
         if CFG.debug
             fprintf('cfgUISecure: Turning off all table NonContiguousCellSelection.\n');
@@ -32,10 +36,12 @@ switch lower(action)
         jscrollInit = findjobj(CFG.handles.hLui(3));
         jtableInit = jscrollInit.getViewport.getView;
         jtableInit.setNonContiguousCellSelection(1);
+        jtableInit.clearSelection; % Clear selected row
         
         jscrollFin = findjobj(CFG.handles.hLui(4));
         jtableFin = jscrollFin.getViewport.getView;
         jtableFin.setNonContiguousCellSelection(1);
+        jtableFin.clearSelection; % Clear selected row
     case 'clearuitablecb'
         if CFG.debug
             fprintf('cfgUISecure: Removing callbacks from UI tables.\n');
@@ -67,11 +73,15 @@ switch lower(action)
         set(findobj('Tag','SaccadeListbox'),'Value',[]);
         ilabPlotSaccade;
     otherwise
-        
+        if CFG.debug
+            fprintf(['cfgUISecure: Unknown action -- %s\n'],action);
+        end
 end
 
     function apForceOn
-        % Restricting autoplot functions
+        % Restricting autoplot functions, Assuming replaced custom
+        % callback that will always execute ilabPlotSaccade
+        % (cfgSaccCB.m/addSelectCB)
         if CFG.debug
             fprintf('cfgUISecure (apForceOn): Restricting autoplot checkbox function.\n');
         end
@@ -94,6 +104,7 @@ end
         set(hAP,'UserData',auto_val); % Store in UserData
         set(hAP,'Value',0); % Force auto-plotting off
         set(hAP,'Enable','off'); % Turn off ability to change this option.
+        ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings, remove current callback
     end
 
     function apReturn
@@ -107,6 +118,32 @@ end
         set(hAP,'UserData',[]); % Clear UserData
         set(hAP,'Enable','on'); % Turn on ability to change this option.
         ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
+    end
+
+    function mainUIOff
+        hf = ilabGetMainWinHdl;
+        
+        hc = findobj(hf, 'Tag', 'TrialList');
+        set(hc, 'Enable', 'off');
+        
+        hc = findobj(hf, 'Tag', 'TrialSlider');
+        set(hc, 'Enable', 'off');
+        
+        hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
+        set(hc, 'Enable', 'off');
+    end
+
+    function mainUIOn
+        hf = ilabGetMainWinHdl;
+        
+        hc = findobj(hf, 'Tag', 'TrialList');
+        set(hc, 'Enable', 'on');
+        
+        hc = findobj(hf, 'Tag', 'TrialSlider');
+        set(hc, 'Enable', 'on');
+        
+        hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
+        set(hc, 'Enable', 'on');
     end
 
 end

@@ -16,12 +16,14 @@ if CFG.debug
     fprintf(['cfgAddNew: Selected row -- %i\n'],selRow);
 end
 
+% UI clearing and restrictions
 cfgUISecure('clearuitableud'); % Keep table UserData clear
 
+% Add action
+AP2 = AP;
+hSL = findobj('Tag','SaccadeListbox');
+PP = ilabGetPlotParms;
 
-
-% Clean-up: Release row select, saccade action, and reset callbacks on UI tables
-cfgUISecure('anyselect');
-cfgUISecure('clearsaccaction'); % Free UI from function
+disp('test');
 
 end

@@ -16,12 +16,29 @@ if CFG.debug
     fprintf(['cfgAddNew: Selected row -- %i\n'],selRow);
 end
 
+% UI clearing and restrictions
 cfgUISecure('clearuitableud'); % Keep table UserData clear
 
+% Add action
+AP = ilabGetAnalysisParms;
+PP = ilabGetPlotParms;
+pseudoAP = AP;
 
+% AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
+% AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
+pseudoAP.saccade.list = [selRow 0 1 708];
+ 
+ilabSetAnalysisParms(pseudoAP);
+hSL = findobj('Tag','SaccadeListbox');
+set(hSL,'Value',1);
 
-% Clean-up: Release row select, saccade action, and reset callbacks on UI tables
-cfgUISecure('anyselect');
-cfgUISecure('clearsaccaction'); % Free UI from function
+ilabPlotSaccade;
+% MultiSlider;
+
+% Reset parameters
+ilabSetAnalysisParms(AP);
+set(findobj('Tag','SaccadeListbox'),'Value',[]);
+
+disp('test');
 
 end
