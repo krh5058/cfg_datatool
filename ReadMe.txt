@@ -7,8 +7,13 @@ Design Considerations:
 	- See ilabEditSaccadeCB.m/updateSaccadeTbl(AP)
 - “Add” function: Possible to add view changes to main UI plots while choosing which trial to add a saccade.  However, this is an additional automated feature and can be forgone if unnecessary
 	- Currently, saccade plots are simply cleared.
-- Implem	ent in cfgSaccCB.m/addDblClickCB, under single click conditional statements
-- Use of Fixation/ROIs/Relative Movement/Pupil features
+	- Implement in cfgSaccCB.m/addDblClickCB, under single click conditional statements
+- Use of features
+	- Fixation
+	- ROIs
+	- Relative Movement 
+	- Pupil 
+	- Segments
 
 Known bugs:
 - Double-clicking doesn’t capture correctly depending on sequence of clicks.  Can fix, but repeatedly clicking on a trial will work.

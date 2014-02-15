@@ -19,26 +19,29 @@ end
 % UI clearing and restrictions
 cfgUISecure('clearuitableud'); % Keep table UserData clear
 
-% Add action
-AP = ilabGetAnalysisParms;
 PP = ilabGetPlotParms;
-pseudoAP = AP;
 
-% AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
-% AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
-pseudoAP.saccade.list = [selRow 0 1 708];
- 
-ilabSetAnalysisParms(pseudoAP);
-hSL = findobj('Tag','SaccadeListbox');
-set(hSL,'Value',1);
+h = findobj('Tag','cfgSlider');
+h1 = findjobj(h);
+h1.setMaximum(diff(PP.index(selRow,1),PP.index(selRow,2))-10);
+h1.setMinimum(10);
 
-ilabPlotSaccade;
-% MultiSlider;
-
-% Reset parameters
-ilabSetAnalysisParms(AP);
-set(findobj('Tag','SaccadeListbox'),'Value',[]);
-
-disp('test');
+% % Add action
+% AP = ilabGetAnalysisParms;
+% pseudoAP = AP;
+% 
+% % AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
+% % AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
+% pseudoAP.saccade.list = [selRow 0 1 708];
+%  
+% ilabSetAnalysisParms(pseudoAP);
+% hSL = findobj('Tag','SaccadeListbox');
+% set(hSL,'Value',1);
+% 
+% ilabPlotSaccade;
+% 
+% % Reset parameters
+% ilabSetAnalysisParms(AP);
+% set(findobj('Tag','SaccadeListbox'),'Value',[]);
 
 end
