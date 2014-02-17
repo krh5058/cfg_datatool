@@ -14,9 +14,12 @@ switch lower(action)
         apForceOff;
     case 'apreturn';
         apReturn;
-    case 'restrictmainui'
-        
-    case 'releasemainui'
+    case 'mainuioff'
+        mainUIOff;
+    case 'mainuion'
+        mainUIOn;
+    case 'forceslselect1'
+        forceSLSelect1;
         
     case 'rowselect';
         if CFG.debug
@@ -118,6 +121,37 @@ end
         set(hAP,'UserData',[]); % Clear UserData
         set(hAP,'Enable','on'); % Turn on ability to change this option.
         ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
+    end
+
+    function mainUIOff
+        hf = ilabGetMainWinHdl;
+        
+        hc = findobj(hf, 'Tag', 'TrialList');
+        set(hc, 'Enable', 'off');
+        
+        hc = findobj(hf, 'Tag', 'TrialSlider');
+        set(hc, 'Enable', 'off');
+        
+        hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
+        set(hc, 'Enable', 'off');
+    end
+
+    function mainUIOn
+        hf = ilabGetMainWinHdl;
+        
+        hc = findobj(hf, 'Tag', 'TrialList');
+        set(hc, 'Enable', 'on');
+        
+        hc = findobj(hf, 'Tag', 'TrialSlider');
+        set(hc, 'Enable', 'on');
+        
+        hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
+        set(hc, 'Enable', 'on');
+    end
+
+    function forceSLSelect1
+        hSL = findobj('Tag','SaccadeListbox');
+        set(hSL,'Value',1);
     end
 
 end

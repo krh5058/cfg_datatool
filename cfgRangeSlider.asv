@@ -1,20 +1,65 @@
-% function cfgRangeSlider
+function cfgRangeSlider
 
 % com.mathworks.mwswing.MJUtilities.initJIDE;  % initialize JIDE
-% jSlider = com.jidesoft.swing.RangeSlider(0,100,10,90);
+jSlider = com.jidesoft.swing.RangeSlider(0,100,10,90);
 
-% jSlider = handle(javaObjectEDT(jSlider), 'CallbackProperties');  % ensure that we're using EDT
-
+jSlider = handle(javaObjectEDT(jSlider), 'CallbackProperties');  % ensure that we're using EDT
+% 
 % [slider,hContainer] = javacomponent(jSlider,java.awt.BorderLayout.SOUTH);
 % set(handle(slider),'units', 'normalized','pos',[.5,.5,1,1]);
 % java.awt.BorderLayout.SOUTH
 
-% javax.swing.UIManager.getLookAndFeel
+% oldLaF = javax.swing.UIManager.getLookAndFeel;
 % javax.swing.UIManager.setLookAndFeel('javax.swing.plaf.metal.MetalLookAndFeel');
 % com.jidesoft.plaf.LookAndFeelFactory.installJideExtension()
 
-[slider,hContainer] = javacomponent(com.jidesoft.swing.RangeSlider(0,707,10,90),[0,0,30,30],ilabGetMainWinHdl);
-set(hContainer,'units', 'normalized','pos',[0.2620 0.467 0.7000 0.025],'tag','cfgSlider');
+[slider,hContainer] = javacomponent(jSlider,[0,0,30,30],ilabGetMainWinHdl);
+set(hContainer,'Units', 'Normalized', ...
+    'Position',[0.2620 0.467 0.7000 0.025], ...
+    'Tag','cfgSlider');
+% set(hContainer,'units', 'normalized','pos',[0.255 0.467 0.715 0.025],'tag','cfgSlider');
 
-% end
+% drawnow; pause(0.05);
+% 
+% javax.swing.UIManager.setLookAndFeel(oldLaF);
+
+% lh = addlistener(hContainer, 'ActionEvent',@MyCallback);
+
+set(slider,'StateChangedCallback',@MyCallback);
+
+    function MyCallback(src,evt)
+        drawnow;
+        
+        persistent oldLowVal oldHiVal
+        
+%         disp(src.getLowValue);
+%         disp(src.getHighValue);
+        
+        lowVal = javaMethodEDT('getLowValue',src);
+        hiVal = javaMethodEDT('getHighValue',src);
+                
+        if (lowVal ~= oldLowVal) || (hiVal ~= oldHiVal)
+            oldLowVal = 
+        
+        % Add action
+        AP = ilabGetAnalysisParms;
+        PP = ilabGetPlotParms;
+        pseudoAP = AP;
+        
+        % AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
+        % AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
+        pseudoAP.saccade.list = [1 0 lowVal hiVal];
+        
+        ilabSetAnalysisParms(pseudoAP);
+
+        ilabPlotSaccade;
+        
+        
+        % Reset parameters
+%         ilabSetAnalysisParms(AP);
+%         set(findobj('Tag','SaccadeListbox'),'Value',[]); % May not need
+        
+    end
+
+end
 

@@ -47,7 +47,7 @@ function cfgSaccCB(action)
             
             cfgUISecure('rowselect');
             
-            cfgUISecure('clearilabplot'); % Clear current plotting
+            cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
             cfgUISecure('apForceOff'); % Prevent saccade plotting
             
             % Set new callbacks
@@ -232,6 +232,8 @@ function cfgSaccCB(action)
                
                cfgUISecure('anyselect'); % Release row select
                cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
+               cfgUISecure('forceSLSelect1'); % Force saccade list box value to 1
+               
                set(currTbl,'UserData',selRow);
                
                % Set main window UI controls
@@ -270,9 +272,9 @@ function cfgSaccCB(action)
                        end
                end
                % Clean-up: Auto-plot return reset saccade action
-               cfgUISecure('apReturn');  % Assuming apForceOff prior to this function call
-               cfgUISecure('clearsaccaction'); % Free UI from function restrictions
-               cfgUISecure('mainUIOn');
+%                cfgUISecure('apReturn');  % Assuming apForceOff prior to this function call
+%                cfgUISecure('clearsaccaction'); % Free UI from function restrictions
+%                cfgUISecure('mainUIOn');
            end
         end
     end

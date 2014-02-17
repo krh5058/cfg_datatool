@@ -21,9 +21,10 @@ cfgUISecure('clearuitableud'); % Keep table UserData clear
 
 PP = ilabGetPlotParms;
 
+set(findobj('Tag','cfgSlider'),'Visible','on');
 h = findobj('Tag','cfgSlider');
 h1 = findjobj(h);
-h1.setMaximum(diff(PP.index(selRow,1),PP.index(selRow,2))-10);
+h1.setMaximum(diff(PP.index(selRow,1:2))-10);
 h1.setMinimum(10);
 
 % % Add action

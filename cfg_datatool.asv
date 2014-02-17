@@ -24,7 +24,7 @@ cfgParams('init');
 
 % Add RangeSlider, but make invisible
 cfgRangeSlider;
-set(findobj('Tag','cfgSlider'),'Visible','off');
+set(
 
 % took out plotParms.XYPLOT_TAG; plotParms.PUPILPLOT_TAG
 % AXES_TAGS = {PP.PCA_TAG; PP.IMG_TAG; PP.CPA_TAG; PP.APA_TAG; 'annotAx'; 'APATMP'};

@@ -47,7 +47,7 @@ function cfgSaccCB(action)
             
             cfgUISecure('rowselect');
             
-            cfgUISecure('clearilabplot'); % Clear current plotting
+            cfgUISecure('clearilabplot'); % Clear current plotting, also se
             cfgUISecure('apForceOff'); % Prevent saccade plotting
             
             % Set new callbacks
@@ -60,6 +60,8 @@ function cfgSaccCB(action)
             jtableFin = jscrollFin.getViewport.getView;
             hJTableFin = handle(jtableFin, 'CallbackProperties');
             set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
+            
+            % User prompt
             
         case 'modify'
                         
@@ -162,6 +164,7 @@ function cfgSaccCB(action)
 
             cfgShow;
             
+            % Clean-up: Auto-plot return reset saccade action
             cfgUISecure('apReturn'); % Assuming apForceOn prior to this function call
             cfgUISecure('clearsaccaction'); % Free UI from function restrictions
 
@@ -181,17 +184,23 @@ function cfgSaccCB(action)
         %         dblclick = get(get(currTbl,'Parent'),'SelectionType');
         persistent dblclick selected
         
-        if isempty(dblclick)
+        if isempty(dblclick) % Single click
             dblclick = tic;        
             selected = src.getSelectedRows;
             action = false;
+            if CFG.debug
+                fprintf(['cfgSaccCB (addDblClickCB): Single click without prior double-click conditions input.\n']);
+            end
         else
             try
-                if toc(dblclick) < .75 && selected == src.getSelectedRows;
+                if toc(dblclick) < .75 && selected == src.getSelectedRows; % Fast enough and same row
                     action = true;
-                else
+                else % Single click, hasn't met conditions
                     dblclick = [];
                     action = false;
+                    if CFG.debug
+                        fprintf(['cfgSaccCB (addDblClickCB): Single click without meeting double-click capture conditions.\n']);
+                    end
                 end
             catch ME % Exceptions are expensive
                 if strcmp(ME.identifier, 'MATLAB:nonLogicalConditional') || strcmp(ME.identifier, 'MATLAB:dimagree')
@@ -204,10 +213,12 @@ function cfgSaccCB(action)
             end
         end
         
-        %         if strcmp(dblclick, 'open') % Restrict to double clicking for confirmation
         if action
            dblclick = [];
-           disp('dblclick')
+           
+           if CFG.debug
+               fprintf(['cfgSaccCB (addDblClickCB): Double-click captured.\n']);
+           end
            
            selcol = get(currTbl,'ColumnName');
            
@@ -216,7 +227,38 @@ function cfgSaccCB(action)
                if CFG.debug
                    fprintf(['cfgSaccCB (addDblClickCB): Selected row -- %i\n'], (src.getSelectedRows+1));
                end
-               set(currTbl,'UserData',(src.getSelectedRows+1));
+               
+               selRow = double(src.getSelectedRows + 1);
+               
+               cfgUISecure('anyselect'); % Release row select
+               cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
+               cfgUISecre('forceslselect1'); % Force saccade list box value to 1
+               
+               set(currTbl,'UserData',selRow);
+               
+               % Set main window UI controls
+               cfgUISecure('mainUIOff');
+               
+               if CFG.debug
+                   fprintf(['cfgSaccCB (addDblClickCB):: Setting UI trial-related items to -- %i\n'],selRow);
+               end
+               
+               hf = ilabGetMainWinHdl;
+               hc = findobj(hf, 'Tag', 'TrialCurrent');
+               set(hc, 'String', num2str(selRow));
+               
+               hc = findobj(hf, 'Tag', 'TrialList');
+               set(hc, 'String', num2str(selRow));
+               
+               hc = findobj(hf, 'Tag', 'TrialSlider');
+               set(hc, 'Value', selRow);
+               
+               % Set plot parms trial to selected trial
+               PP = ilabGetPlotParms;
+               PP.trialList = selRow;
+               ilabSetPlotParms(PP);
+               ilabDrawCoordPlot;
+               
                request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
                switch request
                    case 'add'
@@ -229,7 +271,10 @@ function cfgSaccCB(action)
                            fprintf(['cfgSaccCB (addDblClickCB): Request unknown -- %s\n'], request);
                        end
                end
-               
+               % Clean-up: Auto-plot return reset saccade action
+               cfgUISecure('apReturn');  % Assuming apForceOff prior to this function call
+               cfgUISecure('clearsaccaction'); % Free UI from function restrictions
+               cfgUISecure('mainUIOn');
            end
         end
     end

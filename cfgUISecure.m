@@ -18,6 +18,8 @@ switch lower(action)
         mainUIOff;
     case 'mainuion'
         mainUIOn;
+    case 'forceslselect1'
+        forceSLSelect1;
     case 'rowselect';
         if CFG.debug
             fprintf('cfgUISecure: Turning off all table NonContiguousCellSelection.\n');
@@ -121,6 +123,9 @@ end
     end
 
     function mainUIOff
+        if CFG.debug
+            fprintf('cfgUISecure (mainUIOn): Enabled TrialList, TrialSlider, and ShowVelPlotBox off.\n');
+        end        
         hf = ilabGetMainWinHdl;
         
         hc = findobj(hf, 'Tag', 'TrialList');
@@ -134,6 +139,9 @@ end
     end
 
     function mainUIOn
+        if CFG.debug
+            fprintf('cfgUISecure (mainUIOn): Enabled TrialList, TrialSlider, and ShowVelPlotBox on.\n');
+        end
         hf = ilabGetMainWinHdl;
         
         hc = findobj(hf, 'Tag', 'TrialList');
@@ -144,6 +152,15 @@ end
         
         hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
         set(hc, 'Enable', 'on');
+    end
+
+    function forceSLSelect1
+        if CFG.debug
+            fprintf('cfgUISecure (forceSLSelect1): Setting SaccadeListBox ''Value'' selection to 1, and disabling selection.\n');
+        end
+        hSL = findobj('Tag','SaccadeListbox');
+        set(hSL,'Value',1);
+        set(hSL,'Enable','off');
     end
 
 end
