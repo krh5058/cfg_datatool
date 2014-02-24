@@ -87,7 +87,7 @@ elseif strcmpi(action, 'set')
     if any(strcmpi(varargin{1},{'Drop','Error'}))
         CFG=setfield(CFG,lower(varargin{1}),{varargin{2}},varargin{3});
         CFG.initial.table{varargin{2},strcmp(CFG.cfgHeaders,varargin{1})} = varargin{3}; % Sync tables
-        CFG.final.table{varargin{2},strcmp(CFG.cfgHeaders,varargin{1})} = varargin{3}; % Sync tables
+        CFG.final.table{varargin{2},strcmp(CFG.cfgHeaders,varargin{1})} = varargin{3}; % Sync tables, **Un-sync error
     end
     
 elseif strcmpi(action, 'setsacc')

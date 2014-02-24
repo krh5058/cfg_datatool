@@ -49,23 +49,21 @@ set(slider,'MouseReleasedCallback',@plotFunc);
             
             disp('action')
             
-            % Add action
-            AP = ilabGetAnalysisParms;
-            PP = ilabGetPlotParms;
-            pseudoAP = AP;
+            cfgSliderInterface;
             
-            % AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
-            % AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
-            pseudoAP.saccade.list = [1 0 lowVal hiVal]; % Need to change trial number
-            
-            ilabSetAnalysisParms(pseudoAP);
-            
-            ilabPlotSaccade;
+%             % Add action
+%             AP = ilabGetAnalysisParms;
+%             PP = ilabGetPlotParms;
+%             pseudoAP = AP;
+%             
+%             % AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
+%             % AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
+%             pseudoAP.saccade.list = [1 0 lowVal hiVal]; % Need to change trial number
+%             
+%             ilabSetAnalysisParms(pseudoAP);
+%             
+%             ilabPlotSaccade;
         end
-        
-        % Reset parameters
-%         ilabSetAnalysisParms(AP);
-%         set(findobj('Tag','SaccadeListbox'),'Value',[]); % May not need
         
     end
 

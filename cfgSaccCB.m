@@ -265,7 +265,7 @@ function cfgSaccCB(action)
                        if CFG.debug
                            fprintf(['cfgSaccCB (addDblClickCB): Current request -- %s\n'], request);
                        end
-                       cfgAddNew;
+                       cfgSliderInterface('setup');
                    otherwise
                        if CFG.debug
                            fprintf(['cfgSaccCB (addDblClickCB): Request unknown -- %s\n'], request);
