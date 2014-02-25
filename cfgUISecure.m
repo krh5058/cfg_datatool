@@ -124,7 +124,7 @@ end
 
     function mainUIOff
         if CFG.debug
-            fprintf('cfgUISecure (mainUIOn): Enabled TrialList, TrialSlider, and ShowVelPlotBox off.\n');
+            fprintf('cfgUISecure (mainUIOff): Enabled TrialList, TrialSlider, and ShowVelPlotBox off.\n');
         end        
         hf = ilabGetMainWinHdl;
         

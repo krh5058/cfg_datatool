@@ -2,7 +2,7 @@ function cfgSliderInterface(action)
 global CFG
 
 if CFG.debug
-    fprintf(['cfgSliderInterface: Request received -- %s.\n'],action);
+    fprintf(['cfgSliderInterface: Request received.\n']);
 end
 
 persistent slider
@@ -44,13 +44,8 @@ switch lower(action)
             defaultVals = [10 11];
         end
                 
-        % Get ilab parameters
-        PP = ilabGetPlotParms;
-        AP = ilabGetAnalysisParms;
-        slider.AP = AP; % Create save AP parameters
-        pseudoAP = AP; % Create psuedo AP parameters
-        
         % Set slider visibility and range
+        PP = ilabGetPlotParms;
         
         set(slider.hContainer,'Visible','on');
         slider.jComponent.setMinimum(10); % Pixel buffer       
@@ -60,17 +55,19 @@ switch lower(action)
         slider.jComponent.setsetLowValue(defaultVals(1));
         slider.jComponent.setsetHighValue(defaultVals(2));
         
-    case 'cleanup'
-        % Reset parameters
-        set(slider.hContainer,'Visible','off');
-        ilabSetAnalysisParms(AP);
-%         set(findobj('Tag','SaccadeListbox'),'Value',[]);
+        %     case 'cleanup'
+        % % Reset parameters
+        % set(slider.hContainer,'Visible','on');
+        % ilabSetAnalysisParms(AP);
+        % set(findobj('Tag','SaccadeListbox'),'Value',[]);
         
     otherwise % Default is to plot
         trickPlotSaccade;
 end
 
     function trickPlotSaccade  % Data inject
+        
+
         
         pseudoAP.saccade.list = [slider.selRow 0 javaMethodEDT('getLowValue',slider.jComponent) javaMethodEDT('getHighValue',slider.jComponent)];
         

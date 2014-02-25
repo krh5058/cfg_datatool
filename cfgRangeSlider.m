@@ -31,38 +31,24 @@ set(slider,'MouseReleasedCallback',@plotFunc);
         
         persistent oldLowVal oldHiVal
         
+        % Prevent Matlab congestion if EDT threads are sending too many
+        % events
         action = 0;
         lowVal = javaMethodEDT('getLowValue',src);
         hiVal = javaMethodEDT('getHighValue',src);
                 
-        if isempty(oldLowVal) || isempty(oldHiVal)
+        if isempty(oldLowVal) || isempty(oldHiVal) % Check for old values
             oldLowVal = lowVal;
             oldHiVal = hiVal;
             action = 1;
-        elseif (lowVal ~= oldLowVal) || (hiVal ~= oldHiVal)
+        elseif (lowVal ~= oldLowVal) || (hiVal ~= oldHiVal) % Only if values have changed
             oldLowVal = lowVal;
             oldHiVal = hiVal;
             action = 1;
         end
         
-        if action
-            
-            disp('action')
-            
-            cfgSliderInterface;
-            
-%             % Add action
-%             AP = ilabGetAnalysisParms;
-%             PP = ilabGetPlotParms;
-%             pseudoAP = AP;
-%             
-%             % AP2.saccade.list = [selRow 0 PP.index(selRow,1) PP.index(selRow,2)];
-%             % AP2.saccade.list = [selRow 0 1 diff(PP.index(selRow,1:2))];
-%             pseudoAP.saccade.list = [1 0 lowVal hiVal]; % Need to change trial number
-%             
-%             ilabSetAnalysisParms(pseudoAP);
-%             
-%             ilabPlotSaccade;
+        if action            
+            cfgSliderInterface('plot');            
         end
         
     end

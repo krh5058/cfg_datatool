@@ -69,7 +69,7 @@ function cfgSaccCB(action)
                 fprintf('cfgSaccCB: Modify saccade request.\n');
             end
             
-            cfgUISecure('rowselect');
+%             cfgUISecure('rowselect');
             
         case 'clear'
                         
@@ -83,19 +83,6 @@ function cfgSaccCB(action)
             end
     end
     
-%     AP = ilabGetAnalysisParms;
-%     
-%     % Get trials and selected saccade indices
-%     selsacc = [AP.saccade.list(valSL,1), AP.saccade.list(valSL,3:4)];
-%     
-%     selsacc = AP.saccade.list(valSL,:); % Temp
-%     selsacc(3) = selsacc(3)*acqIntvl; % Temp
-%     selsacc(4) = selsacc(4)*acqIntvl; % Temp
-%     
-%     disp(selsacc); % Temp
-    
-%     AP.saccade.list(valSL,1) = 2; % Temp
-%     
 %     ilabSetAnalysisParms(AP);
 %     
 %     % Delete existing handles (with Tags) for uicontrols
@@ -113,21 +100,6 @@ function cfgSaccCB(action)
 %         if strcmp(cbdetect,cbPgUp) | strcmp(cbdetect,cbPgDown)
 %             delete(children(i));
 %         end
-%     end
-%     
-%     %  Refresh the table, if its window is open.
-%     %  ----------------------------------------------------
-%     ilabShowSaccadeTblCB('refresh');
-%     
-%     % Re-apply auto plot value and callback to SaccadeListbox
-%     hSACCAUTO = findobj('Tag','PLOT_SACCAUTO');
-%     set(hSACCAUTO,'value',auto_val);
-%     if auto_val
-%         h = findobj('Tag','SaccadeListbox');
-%         set(h,'callback','ilabPlotSaccade');
-%     else
-%         h = findobj('Tag','SaccadeListbox');
-%         set(h,'callback',[]);
 %     end
                 
     function addSelectCB(src,evt)
@@ -151,14 +123,14 @@ function cfgSaccCB(action)
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
             
-            switch saccif
-                case 'Initial'
-%                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
-                case 'Final'
-%                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{13});
-                otherwise
-                    return;
-            end 
+%             switch saccif
+%                 case 'Initial'
+% %                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
+%                 case 'Final'
+% %                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{13});
+%                 otherwise
+%                     return;
+%             end 
             
             cfgParams('setsacc',saccif,selsacc(1),selsacc); % Set saccade data with cfgParams('setsacc') call
 
