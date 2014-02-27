@@ -1,4 +1,7 @@
 function cfgRangeSlider
+% cfgRangeSlider.m
+% 2/27/14
+% Author: Ken Hwang
 
 % com.mathworks.mwswing.MJUtilities.initJIDE;  % initialize JIDE
 jSlider = com.jidesoft.swing.RangeSlider(0,100,10,90);
@@ -48,7 +51,7 @@ set(slider,'MouseReleasedCallback',@plotFunc);
         end
         
         if action            
-            cfgSliderInterface('plot');            
+            cfgIlabJavaInterface('update');            
         end
         
     end

@@ -1,6 +1,6 @@
-function [frame, updateTxtFnc, attachRszFnc] = cfgConfirm()
-% cfgConfirm.m
-% 2/25/14
+function [frame, updateTxtFnc, attachRszFnc] = cfgConfirmJFrame()
+% cfgConfirmJFrame.m
+% 2/27/14
 % Author: Ken Hwang
 
 % Import
@@ -158,7 +158,7 @@ attachRszFnc = @applyCmpMvFnc;
     end
 
     function onClose(obj,evt) % When cancel button on frame is pressed
-        setappdata(frame,'UserData',[]);
+%         setappdata(frame,'UserData',[]);
         frame.setVisible(0);
         frame.dispose();
         clear frame

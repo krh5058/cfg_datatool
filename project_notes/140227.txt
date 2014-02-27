@@ -1,0 +1,32 @@
+Update for cfg_datatool (2/27/14)
+
+Issues at hand:
+1) I apologize for the late report.  I have had many other projects that pulled my attention in multiple directions, and I have not had enough time to sit down and program for sufficient amounts of time.  The complexity behind this project requires a lot of effort in keeping many moving parts in mind at one time, and I need a decent amount of time to organize before I can even begin to code.  In the short sessions I have had time for, I have made decent progress, but not enough to meet our discussed deadline of Monday, Mar. 3rd.  To dedicate enough time for your project, I will need to extend our deadline.  If possible, I would like to continue to meet to give you on-going progress, which I hope has been worthwhile.  Additionally, it helps me relay the (many) hurdles in making a quality, bug-free UI.  I've made efforts with Rick (CC'd here) to organize priorities, manage workflow, and allow for more time to dedicate to programming.
+
+2) Additionally, I apologize for not preparing a UI mock-up and usage report this week.  Besides lack of time, most of the programming done since last time I met with your team has been primarily back-end development, debugging, and addressing user interface dead-ends (situations where the user or the interface cannot continue to function because the specific order of input commands has not been explicitly addressed).
+
+3) Please let me know when you are next available to meet, and I will try my best to prepare some visual materials for you to evaluate by then.
+
+Completed:
+- Implemented a range slider to ILAB plot window.
+- Developed UI accessories for confirmation/cancel and other interface events
+- Modification of UI controls to account for user backtracking and other potential interface issues
+- Synchronized saccade plotting with trial and slider effects
+- Adjusted data table for better interface experience
+- Clarified velocity calculation algorithms
+
+Primary Milestones:
+- Complete Add/Modify saccade functions
+- Add a "Clear" selected saccade function, in case of erroneous input
+- Implement trial parameters import, relay specs to client
+- Implement algorithms for latency and distance calculations
+- Run custom saccade selections with ILAB velocity calculations
+- Deliver new UI mock-up and demonstrate usage in current state.
+
+Secondary Milestones:
+- Implement "Plot all" function
+- Add Save/Load CFG parameter functionality
+- Modify "Error" check-box to un-sync between initial/final saccade
+- Organize analysis documentation, include as help text
+- Finalize menu-bar items
+- Debug and quality control of current interface functions

@@ -23,8 +23,6 @@ switch lower(action)
         mainUIOn;
     case 'forceslselect1'
         forceSLSelect1;
-    case 'enableslselect'
-        enableSLSelect;
     case 'rowselect';
         if CFG.debug
             fprintf('cfgUISecure: Turning off all table NonContiguousCellSelection.\n');
@@ -128,7 +126,7 @@ end
     end
 
     function mainUIOff
-        % Restrict main UI items
+        % 
         if CFG.debug
             fprintf('cfgUISecure (mainUIOff): Enabled TrialList, TrialSlider, and ShowVelPlotBox off.\n');
         end        
@@ -145,7 +143,6 @@ end
     end
 
     function mainUIOn
-        % Enable main UI items
         if CFG.debug
             fprintf('cfgUISecure (mainUIOn): Enabled TrialList, TrialSlider, and ShowVelPlotBox on.\n');
         end
@@ -162,25 +159,12 @@ end
     end
 
     function forceSLSelect1
-        % Force the SaccadeListbox to select the first value (trickPlot
-        % modified the list so saccade to plot is first and only value in
-        % list).
         if CFG.debug
             fprintf('cfgUISecure (forceSLSelect1): Setting SaccadeListBox ''Value'' selection to 1, and disabling selection.\n');
         end
         hSL = findobj('Tag','SaccadeListbox');
         set(hSL,'Value',1);
-        set(hSL,'Enable','off'); % Disable SaccadeListbox
-    end
-
-    function enableSLSelect
-        % Re-enable the SaccadeListBox
-        if CFG.debug
-            fprintf('cfgUISecure (enableSLSelect): Re-enabling SaccadeListBox.\n');
-        end
-        
-        hSL = findobj('Tag','SaccadeListbox');
-        set(hSL,'Enable','on'); % Enable SaccadeListbox
+        set(hSL,'Enable','off');
     end
 
 end

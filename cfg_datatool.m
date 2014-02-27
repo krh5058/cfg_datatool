@@ -1,3 +1,7 @@
+% cfg_datatool.m
+% 2/27/14
+% Author: Ken Hwang
+
 global CFG
 
 if isfield(CFG,'tbactive')

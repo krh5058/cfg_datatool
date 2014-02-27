@@ -1,6 +1,6 @@
 Updated: 2/27/14
 
-Backburner feature requests"
+Backburner feature requests:
 - Clearing saccades prior to “delay” event.
 	- Needs to happen after latency files have been added, so after saccade generation occurs.
 	- Warning, manipulates original saccade data
@@ -13,6 +13,9 @@ Design Considerations:
 - Use of features
 	- Pupil, for quality checking purposes
 - Need platform specs from client
+	- version -java
+		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode
+	- JIDE compatibility
 - Error can be applied to both initial/final saccade
 
 Known bugs:
