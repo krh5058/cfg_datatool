@@ -1,6 +1,6 @@
 function [frame, updateTxtFnc, attachRszFnc] = cfgConfirmJFrame()
 % cfgConfirmJFrame.m
-% 2/27/14
+% 2/28/14
 % Author: Ken Hwang
 
 % Import
@@ -73,6 +73,7 @@ frame.setVisible(1);
 updateTxtFnc = @updateLabelTxt;
 updateLabelTxt(frame); % Initialize
 attachRszFnc = @applyCmpMvFnc;
+
     function updateLabelTxt(jFrame)
         % Get new values
         vals = getappdata(jFrame,'WindowTxtVals');
@@ -95,11 +96,11 @@ attachRszFnc = @applyCmpMvFnc;
         % graphic container (Matlab)
         % Must use 'ComponentMovedCallback' with Java component.  Matlab
         % doesn't readily have available figure moving callbacks
-        jf = findjobj(f); 
+        jf = findjobj(f);
         jf = jf(1); % Top-level component (Matlab figure)
         
-        updateFrameLocation(jf,[],jFrame); % Initial re-locate        
-        set(jf,'ComponentMovedCallback',{@updateFrameLocation,jFrame}); % Apply callback        
+        updateFrameLocation(jf,[],jFrame); % Initial re-locate
+        set(jf,'ComponentMovedCallback',{@updateFrameLocation,jFrame}); % Apply callback
     end
 
     function updateFrameLocation(src,evt,jFrame)
@@ -110,57 +111,53 @@ attachRszFnc = @applyCmpMvFnc;
         
         % Set new values
         jFrame.setLocation(x+w,y);
-
+        
         drawnow;
     end
 
     function onConfirm(obj,evt) % When confirm button is pressed
-        %         sid = textField.getText();
-        %         textsize = textField2.getText();
-        %         selectedModel1 = group1.getSelection();
-        %         trig = selectedModel1.getActionCommand();
-        %         listout = cell(listArray);
-        %
-        %         if isempty(char(sid)) % Check for empty SID
-        %             javax.swing.JOptionPane.showMessageDialog(frame,'Subject ID is empty!','Subject ID check',javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        %         elseif isempty(char(textsize))
-        %             javax.swing.JOptionPane.showMessageDialog(frame,'Text Size is empty!','Text Size check',javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        %         elseif all(cellfun(@isempty,listout)) % Check for empty order list
-        %             javax.swing.JOptionPane.showMessageDialog(frame,'Order list is empty!','Order list check',javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        %         else
-        %
-        %             % Parameter confirmation
-        %             s = [];
-        %             for k = 1:length(listout)
-        %                 s = [s listout{k} ','];
-        %             end
-        %
-        %             infostring = sprintf(['Subject ID: ' char(sid) ...
-        %                 '\nText Size: ' char(textsize) ...
-        %                 '\nTrigger: ' char(trig) ...
-        %                 '\nOrder: ' s(1:end-1) ...
-        %                 '\n\nIs this correct?']);
-        %             result = javax.swing.JOptionPane.showConfirmDialog(frame,infostring,'Confirm parameters',javax.swing.JOptionPane.YES_NO_OPTION);
-        %
-        %             % Record data and close
-        %             if result==javax.swing.JOptionPane.YES_OPTION
-        %                 switch char(trig)
-        %                     case 'Yes'
-        %                         trig = 1;
-        %                     case 'No'
-        %                         trig = 0;
-        %                 end
-        %                 setappdata(frame,'UserData',{char(sid),char(textsize),trig,listout});
-        %                 frame.dispose();
-        %             else
-        %             end
-        %         end
+        
+        cfgIlabJavaInterface('calc'); % Pass current values for calculation
+        cfgIlabJavaInterface('setsacc'); % Pass calculated values to data tool
+        
+        CFG=cfgParams('get');
+        
+        % Determine data tool state
+        request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
+        
+        if ~isempty(request)
+            if CFG.debug
+                fprintf(['cfgConfirmJFrame (onConfirm): Current data tool state -- %s\n'], request);
+            end
+            
+            switch request
+                case 'add'
+                    
+                    % Clean-up
+                    cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
+                    cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
+                    cfgUISecure('clearsaccaction'); % Free UI from state restrictions
+                    cfgUISecure('mainUIOn'); % Re-enable main UI functions
+                    cfgIlabJavaInterface('cleanup'); % Clean up persistent variable
+                otherwise
+                    if CFG.debug
+                        fprintf(['cfgConfirmJFrame (onConfirm): Unknown data tool state-- %s\n'], request);
+                    end
+            end
+        else
+            if CFG.debug
+                fprintf(['cfgConfirmJFrame (onConfirm): Data tool state lost%s\n']);
+            end
+        end
+        
+        frame.setVisible(0);
+        frame.dispose();
     end
 
     function onClose(obj,evt) % When cancel button on frame is pressed
-%         setappdata(frame,'UserData',[]);
+        %         setappdata(frame,'UserData',[]);
         frame.setVisible(0);
         frame.dispose();
-        clear frame
     end
+
 end

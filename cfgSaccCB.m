@@ -1,6 +1,6 @@
 function cfgSaccCB(action)
 % cfgSaccCB.m
-% 2/27/14
+% 2/28/14
 % Author: Ken Hwang
 
 global CFG
@@ -8,11 +8,6 @@ global CFG
 if CFG.debug
     fprintf('cfgSaccCB: Saccade editing callback\n');
 end
-
-% -----------------------------------------
-% Get acquisition interval
-% -----------------------------------------
-%     acqIntvl = ilabGetAcqIntvl;
 
 % Get the saccade table and listbox
 LB_TAG = 'SaccadeListbox';
@@ -23,11 +18,11 @@ hSL = findobj('Tag',LB_TAG);
 % UI secure and callback routines
 
 if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData')) % Restrict to one saccade function at a time
-    % Warning
-    disp('warning');
+    % Warning.  Data tool in current state
+    disp('warning'); % **Add better warning
     return;
 else
-    set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',action);
+    set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',action); % Set data tool in current state
 end
 
 switch action
@@ -86,25 +81,6 @@ switch action
         end
 end
 
-%     ilabSetAnalysisParms(AP);
-%
-%     % Delete existing handles (with Tags) for uicontrols
-%     delete(findobj(f, 'Tag','PLOT_SACCADE'));
-%     auto_val = get(findobj('Tag','PLOT_SACCAUTO'),'value'); % Get existing auto plot value
-%     delete(findobj(f, 'Tag','PLOT_SACCAUTO'));
-%
-%     % Delete existing handles (without Tags) for uicontrols
-%     children = get(f,'Children');
-%     cbPgUp = 'ilabShowSaccadeTblCB(''pgUp'')';
-%     cbPgDown = 'ilabShowSaccadeTblCB(''pgDown'')';
-%     for i = length(children)
-%         cbdetect = get(children(i),'Callback'); % Delete by callback string
-%
-%         if strcmp(cbdetect,cbPgUp) | strcmp(cbdetect,cbPgDown)
-%             delete(children(i));
-%         end
-%     end
-
     function addSelectCB(src,evt)
         dblclick = get(get(src,'Parent'),'SelectionType');
         if strcmp(dblclick, 'open') % Restrict to double clicking for confirmation
@@ -119,21 +95,12 @@ end
             
             % Get trials and selected saccade index
             selsacc = AP.saccade.list(selection,:); % Temp
-            selsacc(3) = selsacc(3)*CFG.acqIntvl; % Temp
-            selsacc(4) = selsacc(4)*CFG.acqIntvl; % Temp
+            selsacc(3) = selsacc(3)*CFG.acqIntvl; % Convert to ms
+            selsacc(4) = selsacc(4)*CFG.acqIntvl; % Convert to ms
             
             saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %4d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1:4)), ...
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
-            
-            %             switch saccif
-            %                 case 'Initial'
-            % %                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{12});
-            %                 case 'Final'
-            % %                     hCFGLB = findobj('Tag',CFG.CFG_TAGS{13});
-            %                 otherwise
-            %                     return;
-            %             end
             
             cfgParams('setsacc',saccif,selsacc(1),selsacc); % Set saccade data with cfgParams('setsacc') call
             
@@ -234,6 +201,7 @@ end
                 ilabSetPlotParms(PP);
                 ilabDrawCoordPlot;
                 
+                % Handle data tool state
                 request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
                 switch request
                     case 'add'

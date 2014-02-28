@@ -109,8 +109,9 @@ elseif strcmpi(action, 'setsacc')
     CFG.(lower(varargin{1})).table{varargin{2},7} = varargin{3}(6); % Mean vel (deg/s)
     CFG.(lower(varargin{1})).table{varargin{2},8} = varargin{3}(7); % SRT (ms)
     CFG.(lower(varargin{1})).table{varargin{2},9} = varargin{3}(8); % Time-to-peak (ms)
-    CFG.(lower(varargin{1})).table{varargin{2},10} = CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, uncalculated
-    CFG.(lower(varargin{1})).table{varargin{2},11} = CFG.distVector(varargin{2}); % Distance, uncalculated
+%     CFG.(lower(varargin{1})).table{varargin{2},10} = varargin{3}(9); % Distance travelled (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},10} = CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, uncalculated ** Will remove
+    CFG.(lower(varargin{1})).table{varargin{2},11} = CFG.distVector(varargin{2}); % Distance from target ** Adjust in header, table, and data structure
     
 elseif strcmpi(action,'reset')
     if CFG.debug

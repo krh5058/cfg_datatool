@@ -1,7 +1,7 @@
 function cfgUISecure(action)
 % cfgUISecure.m
 % Switchyard for misc UI handling
-% 2/27/14
+% 2/28/14
 % Author: Ken Hwang
 
 global CFG
@@ -121,7 +121,11 @@ end
         end
         
         hAP = findobj('Tag','PLOT_SACCAUTO'); % Auto-plot checkbox
-        set(hAP,'Value',get(hAP,'UserData')); % Old auto-plot value, from UserData
+        if isempty(get(hAP,'UserData'))
+            set(hAP,'Value',0); % Sets default 0, in case no prior apForceOff/apForceOn call and blank UserData
+        else
+            set(hAP,'Value',get(hAP,'UserData')); % Old auto-plot value, from UserData
+        end
         set(hAP,'UserData',[]); % Clear UserData
         set(hAP,'Enable','on'); % Turn on ability to change this option.
         ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
