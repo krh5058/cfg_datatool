@@ -25,7 +25,7 @@ if strcmpi(action, 'init')
     CFG.CFG_MTAGS = cell([1 6]);
     CFG.CFG_MTAGS{1} = {'CFGMENU_FILE', 'CFGMENU_IMPORT', 'CFGMENU_EXPORTLABEL', 'CFGMENU_EXCFG', 'CFGMENU_EXORIG', 'CFGMENU_EXALL', 'CFGMENU_EXAUTOPARAM', 'CFGMENU_SAVE', 'CFGMENU_LOAD', 'CFGMENU_EXIT'}; % 1, 1-10
     CFG.CFG_MTAGS{2} = {'CFGMENU_EDIT', 'CFGMENU_EDITPARAMS'}; % 2, 1-2
-    CFG.CFG_MTAGS{3} = {'CFGMENU_SACC', 'CFGMENU_SELECTSACC', 'CFGMENU_ADDSACC', 'CFGMENU_MODIFYSACC', 'CFGMENU_DROPSACC', 'CFGMENU_ERRSACC'}; % 3, 1-6
+    CFG.CFG_MTAGS{3} = {'CFGMENU_SACC', 'CFGMENU_SELECTSACC', 'CFGMENU_ADDMODSACC', 'CFGMENU_CLEARSACC'}; % 3, 1-4
     CFG.CFG_MTAGS{4} = {'CFGMENU_PLOT', 'CFGMENU_PLOTALL'}; % 4, 1-2
     CFG.CFG_MTAGS{5} = {'CFGMENU_ANALYSIS'}; % 5, 1
     CFG.CFG_MTAGS{6} = {'CFGMENU_ABT', 'CFGMENU_TBHELP', 'CFGMENU_ABTAUTH'}; % 6, 1-3
@@ -48,14 +48,14 @@ if strcmpi(action, 'init')
     CFG.final.t0 = NaN([CFG.trials 1]);
     CFG.final.latency = NaN([CFG.trials 1]);
     CFG.trialXPosVector = NaN([CFG.trials 1]);
-    CFG.distVector = NaN([CFG.trials 1]);
+    CFG.distTargVector = NaN([CFG.trials 1]);
     
     % Table info
-    CFG.cfgHeaders = {'Start Code', 'Target Code', 'Trial Type', 'Start (ms)', 'End (ms)', 'Peak vel (deg/s)', 'Mean vel (deg/s)', 'SRT (ms)', 'Time-to-peak (ms)', 'Latency (ms)', 'Distance', 'Drop', 'Error'};
+    CFG.cfgHeaders = {'Start Code', 'Target Code', 'Trial Type', 'Start (ms)', 'End (ms)', 'Peak vel (deg/s)', 'Mean vel (deg/s)', 'SRT (ms)', 'Time-to-peak (ms)', 'DistTrav (deg)', 'DistTarg (deg)', 'Drop', 'Error'};
     CFG.cfgFormat = {'numeric','numeric','char','bank','bank','numeric','numeric','bank','bank','numeric','numeric','logical','logical'};
     CFG.cfgEditTable = [false false false false false false false false false false false true true];
     CFG.cfgInitEmpty = {NaN,NaN,'',NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,false,false};
-    CFG.cfgColWidth = {45 60 'auto' 54 54 65 65 56 80 66 55 35 35};
+    CFG.cfgColWidth = {45 60 'auto' 54 54 65 65 56 80 66 66 35 35};
     
     % Old saccade info
     CFG.ILABtTitle = str2mat(['Trial Sacc#  Start   End     vPeak    vMean    SRT   ttPeak  dist  %Zero'],...
@@ -73,8 +73,12 @@ if strcmpi(action, 'init')
         CFG.final.table(n,:) = CFG.cfgInitEmpty;
     end
     
-    CFG.drop = false([CFG.trials 1]);
-    CFG.error = false([CFG.trials 1]);
+    CFG.drop = false([CFG.trials 1]); % Synced
+    CFG.error = false([CFG.trials 2]); % Not synced (1=initial, 2=final)
+    
+elseif strcmpi(action, 'load')
+    
+    
     
 elseif strcmpi(action, 'get')
     
@@ -87,10 +91,21 @@ elseif strcmpi(action, 'set')
         fprintf('cfgParams: CFG parameter set request.\n');
     end
     
-    if any(strcmpi(varargin{1},{'Drop','Error'}))
-        CFG=setfield(CFG,lower(varargin{1}),{varargin{2}},varargin{3});
-        CFG.initial.table{varargin{2},strcmp(CFG.cfgHeaders,varargin{1})} = varargin{3}; % Sync tables
-        CFG.final.table{varargin{2},strcmp(CFG.cfgHeaders,varargin{1})} = varargin{3}; % Sync tables, **Un-sync error
+    % On drop
+    if strcmpi(varargin{2},'Drop')
+        CFG.drop(varargin{3}) = varargin{4}; % Record in drop vector
+        CFG.initial.table{varargin{3},strcmp(CFG.cfgHeaders,varargin{2})} = varargin{4}; % Sync initial table
+        CFG.final.table{varargin{3},strcmp(CFG.cfgHeaders,varargin{2})} = varargin{4}; % Sync final table
+    elseif strcmpi(varargin{2},'Error')
+        switch varargin{1}
+            case CFG.CFG_TAGS{12}
+                saccif = 1;
+                CFG.initial.table{varargin{3},strcmp(CFG.cfgHeaders,varargin{2})} = varargin{4}; % Sync initial table
+            case CFG.CFG_TAGS{13}
+                saccif = 2;
+                CFG.final.table{varargin{3},strcmp(CFG.cfgHeaders,varargin{2})} = varargin{4}; % Sync final table
+        end
+        CFG.error(varargin{3},saccif) = varargin{4}; % Record either in error vector
     end
     
 elseif strcmpi(action, 'setsacc')
@@ -100,18 +115,21 @@ elseif strcmpi(action, 'setsacc')
     end
     
     CFG.(lower(varargin{1})).list(varargin{2},:) = varargin{3}; % Update list
+    
     CFG.(lower(varargin{1})).table{varargin{2},1} = CFG.trialCodes.start; % Start code, Assuming only one type of start code
     CFG.(lower(varargin{1})).table{varargin{2},2} = CFG.targetCodeVector(varargin{2}); % Trial code, uncalculated
     CFG.(lower(varargin{1})).table{varargin{2},3} = CFG.trialTypeVector{varargin{2}}; % Trial Type, uncalculated
-    CFG.(lower(varargin{1})).table{varargin{2},4} = varargin{3}(3); % Start (ms)
-    CFG.(lower(varargin{1})).table{varargin{2},5} = varargin{3}(4); % End (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},4} = varargin{3}(3)*CFG.acqIntvl; % Start (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},5} = varargin{3}(4)*CFG.acqIntvl; % End (ms)
     CFG.(lower(varargin{1})).table{varargin{2},6} = varargin{3}(5); % Peak vel (deg/s)
     CFG.(lower(varargin{1})).table{varargin{2},7} = varargin{3}(6); % Mean vel (deg/s)
     CFG.(lower(varargin{1})).table{varargin{2},8} = varargin{3}(7); % SRT (ms)
     CFG.(lower(varargin{1})).table{varargin{2},9} = varargin{3}(8); % Time-to-peak (ms)
-%     CFG.(lower(varargin{1})).table{varargin{2},10} = varargin{3}(9); % Distance travelled (ms)
-    CFG.(lower(varargin{1})).table{varargin{2},10} = CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, uncalculated ** Will remove
-    CFG.(lower(varargin{1})).table{varargin{2},11} = CFG.distVector(varargin{2}); % Distance from target ** Adjust in header, table, and data structure
+    CFG.(lower(varargin{1})).table{varargin{2},10} = varargin{3}(9); % Distance travelled (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},11} = CFG.distTargVector(varargin{2}); % Distance from target ** Adjust in header, table, and data structure
+    %     CFG.(lower(varargin{1})).table{varargin{2},10} =
+    %     CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, Deprecated
+    
     
 elseif strcmpi(action,'reset')
     if CFG.debug

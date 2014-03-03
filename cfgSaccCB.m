@@ -37,10 +37,10 @@ switch action
         set(hSL,'Callback', @addSelectCB); % Set new callback
         figure(hST); % Bring SaccadeTable to front
         
-    case 'add'
+    case 'addmod'
         
         if CFG.debug
-            fprintf('cfgSaccCB: Add new saccade request.\n');
+            fprintf('cfgSaccCB: Add/Modify new saccade request.\n');
         end
         
         cfgUISecure('rowselect');
@@ -95,8 +95,6 @@ end
             
             % Get trials and selected saccade index
             selsacc = AP.saccade.list(selection,:); % Temp
-            selsacc(3) = selsacc(3)*CFG.acqIntvl; % Convert to ms
-            selsacc(4) = selsacc(4)*CFG.acqIntvl; % Convert to ms
             
             saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %4d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1:4)), ...
                 'Saccade specification', ...
@@ -204,7 +202,7 @@ end
                 % Handle data tool state
                 request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
                 switch request
-                    case 'add'
+                    case 'addmod'
                         if CFG.debug
                             fprintf(['cfgSaccCB (addDblClickCB): Current request -- %s\n'], request);
                         end

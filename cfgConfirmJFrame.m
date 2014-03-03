@@ -120,6 +120,10 @@ attachRszFnc = @applyCmpMvFnc;
         cfgIlabJavaInterface('calc'); % Pass current values for calculation
         cfgIlabJavaInterface('setsacc'); % Pass calculated values to data tool
         
+        onClose(obj,evt);
+    end
+
+    function onClose(obj,evt) % When cancel button on frame is pressed
         CFG=cfgParams('get');
         
         % Determine data tool state
@@ -127,11 +131,11 @@ attachRszFnc = @applyCmpMvFnc;
         
         if ~isempty(request)
             if CFG.debug
-                fprintf(['cfgConfirmJFrame (onConfirm): Current data tool state -- %s\n'], request);
+                fprintf(['cfgConfirmJFrame (onClose): Current data tool state -- %s\n'], request);
             end
             
             switch request
-                case 'add'
+                case 'addmod'
                     
                     % Clean-up
                     cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
@@ -139,23 +143,17 @@ attachRszFnc = @applyCmpMvFnc;
                     cfgUISecure('clearsaccaction'); % Free UI from state restrictions
                     cfgUISecure('mainUIOn'); % Re-enable main UI functions
                     cfgIlabJavaInterface('cleanup'); % Clean up persistent variable
+                    cfgUISecure('clearilabplot'); % Clear ILAB plotting
                 otherwise
                     if CFG.debug
-                        fprintf(['cfgConfirmJFrame (onConfirm): Unknown data tool state-- %s\n'], request);
+                        fprintf(['cfgConfirmJFrame (onClose): Unknown data tool state-- %s\n'], request);
                     end
             end
         else
             if CFG.debug
-                fprintf(['cfgConfirmJFrame (onConfirm): Data tool state lost%s\n']);
+                fprintf(['cfgConfirmJFrame (onClose): Warning -- data tool state lost\n']);
             end
         end
-        
-        frame.setVisible(0);
-        frame.dispose();
-    end
-
-    function onClose(obj,evt) % When cancel button on frame is pressed
-        %         setappdata(frame,'UserData',[]);
         frame.setVisible(0);
         frame.dispose();
     end

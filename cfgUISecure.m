@@ -70,7 +70,7 @@ switch lower(action)
     case 'clearsaccaction'
         saccaction = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
         if CFG.debug
-            fprintf('cfgUISecure: Clearing saccade action -- %s.\n', saccaction);
+            fprintf('cfgUISecure: Clearing data tool state -- %s.\n', saccaction);
         end
         set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',[]);
     case 'clearilabplot'

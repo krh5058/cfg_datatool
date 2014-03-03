@@ -34,9 +34,9 @@ switch lower(action)
 
         % Determine default values
         if find(tbl)==1
-            defaultVals = round(CFG.initial.list(1,3:4)/ilabGetAcqIntvl);
+            defaultVals = round(CFG.initial.list(slider.selRow,3:4)/ilabGetAcqIntvl);
         elseif find(tbl)==2
-            defaultVals = round(CFG.final.list(1,3:4)/ilabGetAcqIntvl);
+            defaultVals = round(CFG.final.list(slider.selRow,3:4)/ilabGetAcqIntvl);
         else
             if CFG.debug
                 fprintf(['cfgIlabJavaInterface (setup): Inaccessible table handle range.\n']);
@@ -135,24 +135,20 @@ switch lower(action)
         % Not complete until after 'calc'
         
         % Construct calculated values for selected saccade entry 
-        selsacc = slider.pseudoAP.saccade.list;          
-        selsacc(3) = selsacc(3)*CFG.acqIntvl; % Convert to ms
-        selsacc(4) = selsacc(4)*CFG.acqIntvl; % Convert to ms
+        selsacc = slider.pseudoAP.saccade.list;
         
         if isfield(slider,'calc')
             selsacc(5) = slider.calc.vPeak;
             selsacc(6) = slider.calc.vMean;
-            %         selsacc(9) = slider.calc.dist; % Currently, not added to table
-            selsacc(9) = NaN; % Temporary
+            selsacc(9) = slider.calc.dist;
             
             %         % Related to imported data, and handled if possible
             %         if importState
             %             selsacc(7) = slider.calc.SRT;
             %             selsacc(8) = slider.calc.ttP;
-            %              % Separate saccade calculations depending on imported data
-            %              and not velocity
-            %             % Placeholder for latency; % Will remove
-            %             % Placeholder for distance from target calculation; ** Adjust in header, table, and data structure
+            %             % Placeholder for distance from target
+            %             calculation; ** Adjust in header, table, and data
+            %             structure. Separate calculation
             %         else
             selsacc(7) = NaN;
             selsacc(8) = NaN;
@@ -184,20 +180,24 @@ switch lower(action)
         
     case 'cleanup'
         
+        % Reset slider visibility
+        set(slider.hContainer,'Visible','off');
+            
         if ~isfield(slider,'origAP')
             if CFG.debug
                 fprintf(['cfgIlabJavaInterface (cleanup): Warning -- original AP lost from ''slider'' persistent variable.\n']);
                 fprintf(['cfgIlabJavaInterface (cleanup): Possibly cleared due to successive calls for ''cleanup''.\n']);
             end
         else
-            % Reset slider visibility
-            set(slider.hContainer,'Visible','off');
             
             % Reset ILAB parameters
             ilabSetAnalysisParms(slider.origAP);
             
             % Remove persistent parameter fields
-            slider = rmfield(slider,{'confirmJFrame','confirmTxtFnc','origAP','pseudoAP','calc'});
+            slider = rmfield(slider,{'confirmJFrame','confirmTxtFnc','origAP','pseudoAP'});
+            if isfield(slider,'calc')
+                slider = rmfield(slider,'calc');
+            end
         end
 
     otherwise % Default is to plot

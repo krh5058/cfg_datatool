@@ -21,3 +21,4 @@ Design Considerations:
 Known bugs:
 - Double-clicking doesn’t capture correctly depending on sequence of clicks.  Can fix, but repeatedly clicking on a trial will work.
 - Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window ill be off-screen.
+- Slider isn't 100% lined up with plot, due to track buffer.

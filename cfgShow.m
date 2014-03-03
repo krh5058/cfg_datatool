@@ -45,10 +45,8 @@ if isempty(cfgWinHdl)
     
     m_sacc = uimenu(cfgWinHdl, 'Label', 'Saccade', 'Tag', CFG.CFG_MTAGS{3}{1});
     uimenu(m_sacc, 'Label', 'Select', 'Tag', CFG.CFG_MTAGS{3}{2}, 'Callback','cfgSaccCB(''select'')');
-    uimenu(m_sacc, 'Label', 'Add', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''add'')');
-    uimenu(m_sacc, 'Label', 'Modify', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','');
-    uimenu(m_sacc, 'Label', 'Drop', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{3}{5},'Callback','');
-    uimenu(m_sacc, 'Label', 'Error', 'Tag', CFG.CFG_MTAGS{3}{6},'Callback','');
+    uimenu(m_sacc, 'Label', 'Add/Modify', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''addmod'')');
+    uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','');
     
     m_plot = uimenu(cfgWinHdl, 'Label', 'Plot', 'Tag', CFG.CFG_MTAGS{4}{1});
     uimenu(m_plot, 'Label', 'Plot all', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','');
@@ -230,7 +228,7 @@ figure(cfgWinHdl);
             fprintf('cfgShow (tableEditCB): New data of class %s is now %i.\n',class(evt.NewData),evt.NewData);
         end
         
-        cfgParams('set',CFG.cfgHeaders{evt.Indices(2)},evt.Indices(1),evt.NewData); % Drop/Error vectors
+        cfgParams('set',get(src,'Tag'),CFG.cfgHeaders{evt.Indices(2)},evt.Indices(1),evt.NewData); % Drop/Error vectors
         cfgShow;
     end
 
