@@ -33,19 +33,20 @@ switch lower(action)
         cfgUISecure('clearuitableud'); % Keep table UserData clear
 
         % Determine default values
+        trackBuffer = 10; % Estimated
         if find(tbl)==1
-            defaultVals = round(CFG.initial.list(slider.selRow,3:4)/ilabGetAcqIntvl);
+            defaultVals = CFG.initial.list(slider.selRow,3:4);
         elseif find(tbl)==2
-            defaultVals = round(CFG.final.list(slider.selRow,3:4)/ilabGetAcqIntvl);
+            defaultVals = CFG.final.list(slider.selRow,3:4);
         else
             if CFG.debug
                 fprintf(['cfgIlabJavaInterface (setup): Inaccessible table handle range.\n']);
             end
         end
         
-        % If not set
-        if any(isnan(defaultVals))
-            defaultVals = [10 11];
+        % If not set or if default values fall below track buffer
+        if any(isnan(defaultVals)) || any(defaultVals<trackBuffer)
+            defaultVals = [trackBuffer trackBuffer+1];
         end
                 
         % Get ilab parameters
@@ -63,7 +64,7 @@ switch lower(action)
         
         % Set slider visibility and range
         set(slider.hContainer,'Visible','on');
-        slider.jComponent.setMinimum(10); % Pixel buffer       
+        slider.jComponent.setMinimum(trackBuffer); % Pixel buffer       
         slider.jComponent.setMaximum(diff(PP.index(slider.selRow,1:2))); % Assuming XY-plots have auto-scaling to data limits (axis manual)
         
         % Direct jComponent method call.  Only doing this once, so no EDT.
@@ -218,7 +219,7 @@ end
         slider.confirmTxtFnc(slider.confirmJFrame);
         
         % Benevolent data inject and plot
-        slider.pseudoAP.saccade.list = [slider.selRow NaN lowVal hiVal]; % First value in list
+        slider.pseudoAP.saccade.list = [slider.selRow 1 lowVal hiVal]; % First value in list
         ilabSetAnalysisParms(slider.pseudoAP);
         ilabPlotSaccade;
         

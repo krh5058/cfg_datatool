@@ -100,6 +100,10 @@ end
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
             
+            if strcmpi(saccif,'Cancel')
+                return;
+            end
+            
             cfgParams('setsacc',saccif,selsacc(1),selsacc); % Set saccade data with cfgParams('setsacc') call
             
             cfgShow;

@@ -7,6 +7,13 @@ global CFG
 
 cfgWinHdl = findobj('Tag',CFG.CFG_TAGS{2});
 
+
+if CFG.expLoaded
+    eFlag = 'on';
+else
+    eFlag = 'off';
+end
+
 if isempty(cfgWinHdl)
     cfgWinHdl = figure('Tag', CFG.CFG_TAGS{2},...
         'Name', 'cfg_datatool',...
@@ -30,26 +37,26 @@ if isempty(cfgWinHdl)
     
     % Menu Items
     m_file = uimenu(cfgWinHdl, 'Label', 'File', 'Tag', CFG.CFG_MTAGS{1}{1});
-    uimenu(m_file, 'Label', 'Import trial data', 'Tag', CFG.CFG_MTAGS{1}{2}, 'Callback','');
+    uimenu(m_file, 'Label', 'Import trial data', 'Tag', CFG.CFG_MTAGS{1}{2}, 'Callback','cfgParams(''load'');');
     hEx = uimenu(m_file, 'Label', 'Export...', 'Tag', CFG.CFG_MTAGS{1}{3}, 'Callback','');
-    uimenu(hEx, 'Label', 'cfg_datatool saccades', 'Tag', CFG.CFG_MTAGS{1}{4}, 'Callback','');
-    uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','');
-    uimenu(hEx, 'Label', 'All saccades', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','');
-    uimenu(hEx, 'Label', 'Auto-saccade parameters', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','');
-    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','');
+    uimenu(hEx, 'Label', 'cfg_datatool saccades', 'Tag', CFG.CFG_MTAGS{1}{4}, 'Callback','','Enable',eFlag);
+    uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','','Enable',eFlag);
+    uimenu(hEx, 'Label', 'All saccades', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','','Enable',eFlag);
+    uimenu(hEx, 'Label', 'Auto-saccade parameters', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','','Enable',eFlag);
+    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','','Enable',eFlag);
     uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{9}, 'Callback','');
     uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{10}, 'Callback','');
     
     m_edit = uimenu(cfgWinHdl, 'Label', 'Edit', 'Tag', CFG.CFG_MTAGS{2}{1});
-    uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback','');
+    uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback','','Enable',eFlag);
     
     m_sacc = uimenu(cfgWinHdl, 'Label', 'Saccade', 'Tag', CFG.CFG_MTAGS{3}{1});
-    uimenu(m_sacc, 'Label', 'Select', 'Tag', CFG.CFG_MTAGS{3}{2}, 'Callback','cfgSaccCB(''select'')');
-    uimenu(m_sacc, 'Label', 'Add/Modify', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''addmod'')');
-    uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','');
+    uimenu(m_sacc, 'Label', 'Select', 'Tag', CFG.CFG_MTAGS{3}{2}, 'Callback','cfgSaccCB(''select'');','Enable',eFlag);
+    uimenu(m_sacc, 'Label', 'Add/Modify', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''addmod'');','Enable',eFlag);
+    uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','','Enable',eFlag);
     
     m_plot = uimenu(cfgWinHdl, 'Label', 'Plot', 'Tag', CFG.CFG_MTAGS{4}{1});
-    uimenu(m_plot, 'Label', 'Plot all', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','');
+    uimenu(m_plot, 'Label', 'Plot all', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','','Enable',eFlag);
     
     m_analysis = uimenu(cfgWinHdl, 'Label', 'Analysis', 'Tag', CFG.CFG_MTAGS{5}{1});
     
@@ -152,7 +159,8 @@ if isempty(cfgWinHdl)
         'ColumnEditable', CFG.cfgEditTable,...
         'ColumnWidth',CFG.cfgColWidth,...
         'CellEditCallback',@tableEditCB,...
-        'ButtonDownFcn',@uiTblCB);
+        'ButtonDownFcn',@uiTblCB,...
+        'Enable',eFlag);
     
     hFinalTable = uitable(cfgWinHdl,...
         'Tag', CFG.CFG_TAGS{13},...
@@ -163,7 +171,8 @@ if isempty(cfgWinHdl)
         'ColumnEditable', CFG.cfgEditTable,...
         'ColumnWidth',CFG.cfgColWidth,...
         'CellEditCallback',@tableEditCB,...
-        'ButtonDownFcn',@uiTblCB);
+        'ButtonDownFcn',@uiTblCB,...
+        'Enable',eFlag);
     
     CFG.handles.hLui = [hInitialHeader hFinalHeader hInitialTable hFinalTable];
     
@@ -206,11 +215,21 @@ else
         fprintf('cfgShow: Refreshing window moving parts.\n');
     end
     
+    % 140304--Moving parts are:
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{4}),'Enable',eFlag); % Export cfg_datatool saccades
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{5}),'Enable',eFlag); % Export Original saccades
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{6}),'Enable',eFlag); % Export All saccades
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{7}),'Enable',eFlag); % Export Auto-saccade parameters
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{8}),'Enable',eFlag); % Save cfg_datatool workspace
+    set(findobj('Tag', CFG.CFG_MTAGS{2}{2}),'Enable',eFlag); % Edit Parameters
+    set(findobj('Tag', CFG.CFG_MTAGS{3}{2}),'Enable',eFlag); % Saccade Select
+    set(findobj('Tag', CFG.CFG_MTAGS{3}{3}),'Enable',eFlag); % Saccade Add/Modify
+    set(findobj('Tag', CFG.CFG_MTAGS{3}{4}),'Enable',eFlag); % Saccade Clear
+    set(findobj('Tag', CFG.CFG_MTAGS{4}{2}),'Enable',eFlag); % Plot all
+    set(CFG.handles.hLui(3),'Enable',eFlag); % Initial table 
+    set(CFG.handles.hLui(4),'Enable',eFlag); % Final table 
+    
     % 140131--Moving parts are:
-    % CFG.handles.hRp(3), 'String'
-    % CFG.handles.hRp(4), 'String'
-    % CFG.handles.hLui(3), 'Data'
-    % CFG.handles.hLui(4), 'Data'
     set(CFG.handles.hRp(3),'String',['Number of Dropped Trials: ' int2str(length(find(CFG.drop)))]);
     set(CFG.handles.hRp(4),'String',['Number of Error Trials: ' int2str(length(find(CFG.error)))]);
     set(CFG.handles.hLui(3),'Data', CFG.initial.table);
@@ -233,15 +252,15 @@ figure(cfgWinHdl);
     end
 
     function uiTblCB(src,evt)
-        dblclick = get(get(src,'Parent'),'SelectionType');
-        fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
-        coord = get(get(src,'Parent'),'CurrentPoint');
-        fprintf('cfgShow (uiTblCB) -- Selected coordinates: %3.1f %3.1f \n', coord(1), coord(2));
-        
-        
-        jscroll = findjobj(src);
-        jtable = jscroll.getViewport.getView;
-        view = get(jscroll.getComponent(0).getView.getModel);
+%         dblclick = get(get(src,'Parent'),'SelectionType');
+%         fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
+%         coord = get(get(src,'Parent'),'CurrentPoint');
+%         fprintf('cfgShow (uiTblCB) -- Selected coordinates: %3.1f %3.1f \n', coord(1), coord(2));
+%         
+%         
+%         jscroll = findjobj(src);
+%         jtable = jscroll.getViewport.getView;
+%         view = get(jscroll.getComponent(0).getView.getModel);
     end
 
 end

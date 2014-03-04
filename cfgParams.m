@@ -41,14 +41,13 @@ if strcmpi(action, 'init')
     CFG.path = ILAB.path;
     
     % Experiment loaded
+    CFG.expLoaded = false;
+    CFG.inputHead = {'Trial','Trial Type','Target Code','Delay','Saccade','TargetX'};
     CFG.targetCodeVector = NaN([CFG.trials 1]);
     CFG.trialTypeVector = cell([CFG.trials 1]);
     CFG.initial.t0 = NaN([CFG.trials 1]);
-    CFG.initial.latency = NaN([CFG.trials 1]);
     CFG.final.t0 = NaN([CFG.trials 1]);
-    CFG.final.latency = NaN([CFG.trials 1]);
     CFG.trialXPosVector = NaN([CFG.trials 1]);
-    CFG.distTargVector = NaN([CFG.trials 1]);
     
     % Table info
     CFG.cfgHeaders = {'Start Code', 'Target Code', 'Trial Type', 'Start (ms)', 'End (ms)', 'Peak vel (deg/s)', 'Mean vel (deg/s)', 'SRT (ms)', 'Time-to-peak (ms)', 'DistTrav (deg)', 'DistTarg (deg)', 'Drop', 'Error'};
@@ -78,7 +77,98 @@ if strcmpi(action, 'init')
     
 elseif strcmpi(action, 'load')
     
+    if CFG.debug
+        fprintf('cfgParams: CFG parameter load request.\n');
+    end
     
+    [f,p] = uigetfile('*.xlsx');
+    
+    if isequal(f,0) || isequal(p,0)
+        if CFG.debug
+            fprintf('cfgParams (load): Action ''uigetfile'' cancelled.\n');
+        end
+        return;
+    end
+    
+    try
+        [num,txt] = xlsread([p f]);
+        
+        if CFG.debug
+            fprintf('cfgParams (load): File read complete... %s.\n',[p f]);
+        end
+        
+        % File quality checks
+        
+        % Header check
+        for i = 1:size(txt,2)
+            if ~strcmp(txt{1,i},CFG.inputHead{i})
+                warning('cfg_datatool:HeaderDifference','Expected input header, %s, in column %i read as -- %s.',CFG.inputHead{i},i,txt{i,1});
+            end
+        end
+        
+        txt = txt(2:end,:); % Trim headers
+        % Trial number check
+        if ~all(num(:,1)==(1:CFG.trials)')
+            warning('cfg_datatool:TrialNumDifference','Expected trials %i to %i. Trial numbers in data column %i does not match.',1,CFG.trials,1);
+        end
+        % xlsread() text and numeric data size check
+        if ~all(size(txt) == size(num));
+            warning('cfg_datatool:SizeDifference','Numeric data fields size (%i-by-%i) does not match Text data fields size (%i-by-%i).',size(num,1),size(num,2),size(txt,1),size(txt,2));
+        end
+        
+        % Text entry check (txt)
+        chkEmpty = cellfun(@isempty,txt);
+        byColChk = all(chkEmpty(:,[1 3:end])); % 1, 3, 4, 5, 6
+        if ~all(byColChk)
+            chkColInd = find(~byColChk); % 1, 3, 4, 5, 6
+            for i = chkColInd
+                if i~=1
+                    c = i+1;
+                else
+                    c = 1;
+                end
+                for j = 1:size(txt,1)
+                    if ~isempty(txt{j,c})
+                        warning('cfg_datatool:TxtFieldNotEmpty','Expected empty text data field at row %i, column %i, found not empty: %s.',j,c,txt{j,c});
+                        if isnan(num(j,c))
+                            fprintf('Corresponding numeric data entry at row %i, column %i, found empty.\n',j,c);
+                        end
+                    end
+                end
+            end
+        end
+        
+        % Numeric entry check (num(:,2))
+        chkEmpty = isnan(num(:,2));
+        if ~all(chkEmpty)
+            chkRowInd = find(~chkEmpty);
+            for i = chkRowInd
+                warning('cfg_datatool:NumFieldNotNaN','Expected empty numeric data field at row %i, column %i, found not empty: %d.',i,2,num(i,2));
+                if isempty(txt{i,2})
+                    fprintf('Corresponding text data entry at row %i, column %i, found empty.\n',i,2);
+                end
+            end
+        end
+        
+        % Splice data
+        dat = num2cell(num);
+        dat(:,2) = txt(:,2);
+        
+        % Save data
+        CFG.importedData = dat;
+        CFG.trialTypeVector = CFG.importedData(:,2);
+        CFG.targetCodeVector = cell2mat(CFG.importedData(:,3));
+        CFG.initial.t0 = cell2mat(CFG.importedData(:,4));
+        CFG.final.t0 = cell2mat(CFG.importedData(:,5));
+        CFG.trialXPosVector = cell2mat(CFG.importedData(:,6));
+        
+        % Refresh UI
+        CFG.expLoaded = true;
+        cfgShow;
+        
+    catch ME
+        throw(ME);
+    end
     
 elseif strcmpi(action, 'get')
     
@@ -114,7 +204,15 @@ elseif strcmpi(action, 'setsacc')
         fprintf('cfgParams: %s saccade, at index %i , changed.\n', varargin{1},varargin{2});
     end
     
-    CFG.(lower(varargin{1})).list(varargin{2},:) = varargin{3}; % Update list
+    saccin = varargin{3};
+    
+    [sRT,ttP,dtT] = cfgExpCalc(varargin{1},varargin{2},saccin(3),saccin(4));
+    
+    % Re-evaluated for list
+    saccin(7) = sRT;
+    saccin(8) = ttP;
+    
+    CFG.(lower(varargin{1})).list(varargin{2},:) = saccin; % Update list
     
     CFG.(lower(varargin{1})).table{varargin{2},1} = CFG.trialCodes.start; % Start code, Assuming only one type of start code
     CFG.(lower(varargin{1})).table{varargin{2},2} = CFG.targetCodeVector(varargin{2}); % Trial code, uncalculated
@@ -123,14 +221,13 @@ elseif strcmpi(action, 'setsacc')
     CFG.(lower(varargin{1})).table{varargin{2},5} = varargin{3}(4)*CFG.acqIntvl; % End (ms)
     CFG.(lower(varargin{1})).table{varargin{2},6} = varargin{3}(5); % Peak vel (deg/s)
     CFG.(lower(varargin{1})).table{varargin{2},7} = varargin{3}(6); % Mean vel (deg/s)
-    CFG.(lower(varargin{1})).table{varargin{2},8} = varargin{3}(7); % SRT (ms)
-    CFG.(lower(varargin{1})).table{varargin{2},9} = varargin{3}(8); % Time-to-peak (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},8} = saccin(7); % SRT (ms)
+    CFG.(lower(varargin{1})).table{varargin{2},9} = saccin(8); % Time-to-peak (ms)
     CFG.(lower(varargin{1})).table{varargin{2},10} = varargin{3}(9); % Distance travelled (ms)
-    CFG.(lower(varargin{1})).table{varargin{2},11} = CFG.distTargVector(varargin{2}); % Distance from target ** Adjust in header, table, and data structure
-    %     CFG.(lower(varargin{1})).table{varargin{2},10} =
-    %     CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, Deprecated
+    CFG.(lower(varargin{1})).table{varargin{2},11} = dtT; % Distance from target (pix)
     
-    
+    %     CFG.(lower(varargin{1})).table{varargin{2},10} = CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, Deprecated
+              
 elseif strcmpi(action,'reset')
     if CFG.debug
         disp('cfgParams: CFG parameter reset requested.');
@@ -143,5 +240,36 @@ elseif strcmpi(action,'reset')
 else
     error('cfgParams: Unrecognized action.');
 end
+
+    function [sRT,ttP,dtT] = cfgExpCalc(saccIF,nTrial,sIndex,eIndex)
+        PP = ilabGetPlotParms;
+        % Shift relative to start of PP.index (because that's how PP.data is structured)
+        % Shift start index back 1, because slider index already accounts
+        % for first index value
+        absIndex = (PP.index(nTrial,1)-1) + [sIndex eIndex];
+        trialx = PP.data(absIndex(1):absIndex(2),1); % X-coord data within window
+        trialy = PP.data(absIndex(1):absIndex(2),2); % Y-coord data within window
+        
+        % Unsure the necessity to label initial velocity as 0
+        vx = [0; diff(trialx)];
+        vy = [0; diff(trialy)];
+        
+        acqIntvl_ms = ilabGetAcqIntvl;
+        acqIntvl_sec = acqIntvl_ms/1000;
+        [pixPerDegH, pixPerDegV] = ilabPixelsPerDegree; % pix/deg
+        
+        vx = vx/(pixPerDegH*acqIntvl_sec);  % (pix/sample) * (deg/pix) * (sample/s) = deg/s
+        vy = vy/(pixPerDegV*acqIntvl_sec);  % (pix/sample) * (deg/pix) * (sample/s) = deg/s
+        vabs = sqrt(vx.^2 + vy.^2); % Velocity within saccade window
+        [vPeak,iPeak] = max(vabs); % First maximimum index returned
+        iPeak = (iPeak-1) + sIndex; % Index (relative to trial) of peak
+        
+        t0 = CFG.(lower(saccIF)).t0(nTrial); % Start of event (ms)
+        tIndex = t0/ilabGetAcqIntvl; % Start of event (index)
+        
+        sRT = (sIndex - tIndex)*ilabGetAcqIntvl; % Saccadic reaction time (ms)
+        ttP = (iPeak - tIndex)*ilabGetAcqIntvl; % Peak latency from target (ms)
+        dtT = abs(trialx(end) - CFG.trialXPosVector(nTrial)); % Absolute distance from target (pix)        
+    end
 
 end
