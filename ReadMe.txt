@@ -1,5 +1,8 @@
 Updated: 2/27/14
 
+More comprehensive found in Google Docs and commit text:
+https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
+
 Backburner feature requests:
 - Clearing saccades prior to “delay” event.
 	- Needs to happen after latency files have been added, so after saccade generation occurs.
