@@ -9,15 +9,8 @@ if CFG.debug
     fprintf('cfgSaccCB: Saccade editing callback\n');
 end
 
-% Get the saccade table and listbox
-LB_TAG = 'SaccadeListbox';
-TBL_TAG = 'SaccadeTable';
-hST = findobj('Tag',TBL_TAG);
-hSL = findobj('Tag',LB_TAG);
-
-% UI secure and callback routines
-
-if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData')) % Restrict to one saccade function at a time
+% Restrict to one saccade function at a time, data tool state
+if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData')) 
     % Warning.  Data tool in current state
     disp('warning'); % **Add better warning
     return;
@@ -32,10 +25,32 @@ switch action
             fprintf('cfgSaccCB: Select saccade request.\n');
         end
         
-        cfgUISecure('apForceOn'); % Will implement callback to always plot saccades
+        % Get the saccade table and listbox
+        LB_TAG = 'SaccadeListbox';
+        TBL_TAG = 'SaccadeTable';
+        hST = findobj('Tag',TBL_TAG);
+        hSL = findobj('Tag',LB_TAG);
+        
+        if isempty(hST) % If saccade table was closed for some reason
+            if CFG.debug
+                fprintf('cfgSaccCB: SaccadeTable absent, re-initializing.\n');
+            end
+            ilabShowSaccadeTblCB('init')
+            LB_TAG = 'SaccadeListbox';
+            TBL_TAG = 'SaccadeTable';
+            hST = findobj('Tag',TBL_TAG);
+            hSL = findobj('Tag',LB_TAG);
+        end
+
+        cfgUISecure('apForceOn'); % Will implement callback (addSelectCB) to always plot saccades
         
         set(hSL,'Callback', @addSelectCB); % Set new callback
         figure(hST); % Bring SaccadeTable to front
+        
+        % Set up cfgConfirmJFrame, attach confirmJFrame and acquire
+        % confirmTxtFnc function to saccade table
+        [ST.confirmJFrame,ST.confirmTxtFnc,cmpMvFnc] = cfgConfirmJFrame(false);
+        cmpMvFnc(hST, ST.confirmJFrame);
         
     case 'addmod'
         
@@ -46,7 +61,7 @@ switch action
         cfgUISecure('rowselect');
         
         cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
-        cfgUISecure('apForceOff'); % Prevent saccade plotting
+        cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
         
         % Set new callbacks
         jscrollInit = findjobj(CFG.handles.hLui(3));
@@ -60,15 +75,7 @@ switch action
         set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
         
         % User prompt
-        
-    case 'modify'
-        
-        if CFG.debug
-            fprintf('cfgSaccCB: Modify saccade request.\n');
-        end
-        
-        %             cfgUISecure('rowselect');
-        
+                
     case 'clear'
         
         if CFG.debug
@@ -94,7 +101,13 @@ end
             AP = ilabGetAnalysisParms;
             
             % Get trials and selected saccade index
-            selsacc = AP.saccade.list(selection,:); % Temp
+            selsacc = AP.saccade.list(selection,:);
+            
+            wndwTxtVals = {int2str(selsacc(1,3)*ilabGetAcqIntvl), int2str(selsacc(1,4)*ilabGetAcqIntvl)}; % First saccade only
+            setappdata(ST.confirmJFrame,'WindowTxtVals', wndwTxtVals);
+            
+            % Update ST.confirmJFrame
+            ST.confirmTxtFnc(ST.confirmJFrame);
             
             saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %4d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1:4)), ...
                 'Saccade specification', ...
@@ -111,6 +124,8 @@ end
             % Clean-up: Auto-plot return reset saccade action
             cfgUISecure('apReturn'); % Assuming apForceOn prior to this function call
             cfgUISecure('clearsaccaction'); % Free UI from function restrictions
+            ST.confirmJFrame.setVisible(0);
+            ST.confirmJFrame.dispose();
             
             if CFG.debug
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade: \n');
@@ -119,7 +134,18 @@ end
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade Type: %s\n', saccif);
             end
             
-        elseif strcmp(dblclick, 'normal') % Single click will continue to plot
+        elseif strcmp(dblclick, 'normal') % Single click will continue to plot and update ConfirmJFrame
+            % Get selection
+            selection = get(src,'Value');
+            AP = ilabGetAnalysisParms;
+            selsacc = AP.saccade.list(selection,:); 
+            wndwTxtVals = {int2str(selsacc(1,3)*ilabGetAcqIntvl), int2str(selsacc(1,4)*ilabGetAcqIntvl)}; % First saccade only
+            setappdata(ST.confirmJFrame,'WindowTxtVals', wndwTxtVals);
+            
+            % Update ST.confirmJFrame
+            ST.confirmTxtFnc(ST.confirmJFrame);
+            
+            % Plot
             ilabPlotSaccade;
         end
     end
@@ -216,12 +242,6 @@ end
                             fprintf(['cfgSaccCB (addDblClickCB): Request unknown -- %s\n'], request);
                         end
                 end
-                % Clean-up: Auto-plot return reset saccade action
-%                cfgUISecure('enableSLSelect')
-%                cfgUISecure('apReturn');  % Assuming apForceOff prior to this function call
-%                cfgUISecure('clearsaccaction'); % Free UI from function restrictions
-%                cfgUISecure('mainUIOn');
-%                cfgIlabJavaInterface('cleanup');
             end
         end
     end

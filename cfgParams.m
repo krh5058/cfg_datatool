@@ -5,8 +5,14 @@ function CFG = cfgParams(action, varargin)
 
 global CFG
 
+if ~isempty(CFG)
+    if CFG.debug
+        fprintf('cfgParams: Received request --- %s.\n',action);
+    end
+end
+
 if strcmpi(action, 'init')
-    disp('cfgParams: Initializing global parameters');
+    fprintf('cfgParams(init): Initializing global parameters.\n');
     
     % Toolbox general
     CFG.tbactive = true;
@@ -40,8 +46,8 @@ if strcmpi(action, 'init')
     CFG.time = ILAB.time;
     CFG.path = ILAB.path;
     
-    % Experiment loaded
-    CFG.expLoaded = false;
+    % Experiment imported
+    CFG.importState = false;
     CFG.inputHead = {'Trial','Trial Type','Target Code','Delay','Saccade','TargetX'};
     CFG.targetCodeVector = NaN([CFG.trials 1]);
     CFG.trialTypeVector = cell([CFG.trials 1]);
@@ -78,14 +84,26 @@ if strcmpi(action, 'init')
 elseif strcmpi(action, 'load')
     
     if CFG.debug
-        fprintf('cfgParams: CFG parameter load request.\n');
+        fprintf('cfgParams(load): Loading old CFG parameters.\n');
+    end    
+    
+elseif strcmpi(action, 'save')
+    
+    if CFG.debug
+        fprintf('cfgParams(save): Saving new CFG parameters.\n');
+    end   
+    
+elseif strcmpi(action, 'import')
+    
+    if CFG.debug
+        fprintf('cfgParams(import): Importing CFG experimental data.\n');
     end
     
     [f,p] = uigetfile('*.xlsx');
     
     if isequal(f,0) || isequal(p,0)
         if CFG.debug
-            fprintf('cfgParams (load): Action ''uigetfile'' cancelled.\n');
+            fprintf('cfgParams (import): Action ''uigetfile'' cancelled.\n');
         end
         return;
     end
@@ -94,7 +112,7 @@ elseif strcmpi(action, 'load')
         [num,txt] = xlsread([p f]);
         
         if CFG.debug
-            fprintf('cfgParams (load): File read complete... %s.\n',[p f]);
+            fprintf('cfgParams (import): File read complete... %s.\n',[p f]);
         end
         
         % File quality checks
@@ -131,7 +149,7 @@ elseif strcmpi(action, 'load')
                     if ~isempty(txt{j,c})
                         warning('cfg_datatool:TxtFieldNotEmpty','Expected empty text data field at row %i, column %i, found not empty: %s.',j,c,txt{j,c});
                         if isnan(num(j,c))
-                            fprintf('Corresponding numeric data entry at row %i, column %i, found empty.\n',j,c);
+                            fprintf('cfgParams (import): Corresponding numeric data entry at row %i, column %i, found empty.\n',j,c);
                         end
                     end
                 end
@@ -145,7 +163,7 @@ elseif strcmpi(action, 'load')
             for i = chkRowInd
                 warning('cfg_datatool:NumFieldNotNaN','Expected empty numeric data field at row %i, column %i, found not empty: %d.',i,2,num(i,2));
                 if isempty(txt{i,2})
-                    fprintf('Corresponding text data entry at row %i, column %i, found empty.\n',i,2);
+                    fprintf('cfgParams (import): Corresponding text data entry at row %i, column %i, found empty.\n',i,2);
                 end
             end
         end
@@ -163,7 +181,7 @@ elseif strcmpi(action, 'load')
         CFG.trialXPosVector = cell2mat(CFG.importedData(:,6));
         
         % Refresh UI
-        CFG.expLoaded = true;
+        CFG.importState = true;
         cfgShow;
         
     catch ME
@@ -173,12 +191,12 @@ elseif strcmpi(action, 'load')
 elseif strcmpi(action, 'get')
     
     if CFG.debug
-        fprintf('cfgParams: CFG parameter requested.\n');
+        fprintf('cfgParams(get): CFG parameters requested.\n');
     end
     
 elseif strcmpi(action, 'set')
     if CFG.debug
-        fprintf('cfgParams: CFG parameter set request.\n');
+        fprintf('cfgParams(set): Setting CFG parameter --- %s.\n',varargin{2});
     end
     
     % On drop
@@ -200,8 +218,8 @@ elseif strcmpi(action, 'set')
     
 elseif strcmpi(action, 'setsacc')
     if CFG.debug
-        fprintf('cfgParams: CFG saccade value set request.\n');
-        fprintf('cfgParams: %s saccade, at index %i , changed.\n', varargin{1},varargin{2});
+        fprintf('cfgParams(setsacc): CFG saccade value set request.\n');
+        fprintf('cfgParams(setsacc): %s saccade, at index %i , changed.\n', varargin{1},varargin{2});
     end
     
     saccin = varargin{3};
@@ -230,7 +248,7 @@ elseif strcmpi(action, 'setsacc')
               
 elseif strcmpi(action,'reset')
     if CFG.debug
-        disp('cfgParams: CFG parameter reset requested.');
+        fprintf('cfgParams(reset): CFG parameter reset requested.\n');
     end
     
     clear global CFG
@@ -242,6 +260,9 @@ else
 end
 
     function [sRT,ttP,dtT] = cfgExpCalc(saccIF,nTrial,sIndex,eIndex)
+        if CFG.debug
+            fprintf('cfgParams(cfgExpCalc): Nested function called for additional saccade calculations.\n');
+        end
         PP = ilabGetPlotParms;
         % Shift relative to start of PP.index (because that's how PP.data is structured)
         % Shift start index back 1, because slider index already accounts

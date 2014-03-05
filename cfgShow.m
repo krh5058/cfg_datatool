@@ -7,8 +7,7 @@ global CFG
 
 cfgWinHdl = findobj('Tag',CFG.CFG_TAGS{2});
 
-
-if CFG.expLoaded
+if CFG.importState
     eFlag = 'on';
 else
     eFlag = 'off';
@@ -22,22 +21,23 @@ if isempty(cfgWinHdl)
         'Resize', 'off',...
         'Color', [.95 1 .95]);
     %     'CloseRequestFcn','ilabShowSaccadeTblCB(''close'')');
-    %     Currently, all Children handles are deleted on close requestas long as their visibility remains 'on'
+    %     Currently, all Children handles are deleted on close
+    %     request as long as their visibility remains 'on'
     
     scrsz = get(0,'ScreenSize');
     S = get(gcf, 'Position'); % Position of default figure
     S(2) =   0.15*scrsz(4);      % bottom
-%     S(3) = 1.4*S(3);  % width
+    %     S(3) = 1.4*S(3);  % width
     S(3) = scrsz(3); % width
     S(4) = 0.85*scrsz(4);   % height
     set(gcf, 'Position', S);
     
     BgColor1 = [.95 1 .95];
-    BgColor2 = [1 1 .95];
+    %     BgColor2 = [1 1 .95];
     
     % Menu Items
     m_file = uimenu(cfgWinHdl, 'Label', 'File', 'Tag', CFG.CFG_MTAGS{1}{1});
-    uimenu(m_file, 'Label', 'Import trial data', 'Tag', CFG.CFG_MTAGS{1}{2}, 'Callback','cfgParams(''load'');');
+    uimenu(m_file, 'Label', 'Import trial data', 'Tag', CFG.CFG_MTAGS{1}{2}, 'Callback','cfgParams(''import'');');
     hEx = uimenu(m_file, 'Label', 'Export...', 'Tag', CFG.CFG_MTAGS{1}{3}, 'Callback','');
     uimenu(hEx, 'Label', 'cfg_datatool saccades', 'Tag', CFG.CFG_MTAGS{1}{4}, 'Callback','','Enable',eFlag);
     uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','','Enable',eFlag);
@@ -176,40 +176,6 @@ if isempty(cfgWinHdl)
     
     CFG.handles.hLui = [hInitialHeader hFinalHeader hInitialTable hFinalTable];
     
-%     hInitialHeader = uicontrol(cfgWinHdl,'Style','text',...
-%         'Tag', CFG.CFG_TAGS{10},...
-%         'Units','normalized','Position',[.01 .75 .49 .04],...
-%         'HorizontalAlignment', 'left',...
-%         'String',CFG.tTitle,...
-%         'BackgroundColor',BgColor2,...
-%         'FontWeight', 'bold');
-%     
-%     hFinalHeader = uicontrol(cfgWinHdl,'Style','text',...
-%         'Tag', CFG.CFG_TAGS{11},...
-%         'Units','normalized','Position',[.51 .75 .49 .04],...
-%         'HorizontalAlignment', 'left',...
-%         'String',CFG.tTitle,...
-%         'BackgroundColor',BgColor2,...
-%         'FontWeight', 'bold');
-%     
-%     hInitialListBox = uicontrol(cfgWinHdl,'Style','listbox',...
-%         'Tag', CFG.CFG_TAGS{12},...
-%         'Units','normalized','Position',[.01 .01 .49 .75],...
-%         'String',CFG.initial.table,...
-%         'BackgroundColor',BgColor2,...
-%         'Min', 0, 'Max', 1);
-% %         'Fontname', FWFONTNAME,...
-% %         'CallBack','');
-%         
-%     hFinalListBox = uicontrol(cfgWinHdl,'Style','listbox',...
-%         'Tag', CFG.CFG_TAGS{13},...
-%         'Units','normalized','Position',[.51 .01 .49 .75],...
-%         'String',CFG.final.table,...
-%         'BackgroundColor',BgColor2,...
-%         'Min', 0, 'Max', 1);
-% %         'Fontname', FWFONTNAME,...
-% %         'CallBack','');
-
 else
     if CFG.debug
         fprintf('cfgShow: Refreshing window moving parts.\n');
@@ -251,16 +217,16 @@ figure(cfgWinHdl);
         cfgShow;
     end
 
-    function uiTblCB(src,evt)
-%         dblclick = get(get(src,'Parent'),'SelectionType');
-%         fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
-%         coord = get(get(src,'Parent'),'CurrentPoint');
-%         fprintf('cfgShow (uiTblCB) -- Selected coordinates: %3.1f %3.1f \n', coord(1), coord(2));
-%         
-%         
-%         jscroll = findjobj(src);
-%         jtable = jscroll.getViewport.getView;
-%         view = get(jscroll.getComponent(0).getView.getModel);
+    function uiTblCB(src,evt) % Possibly for future context menus
+        %         dblclick = get(get(src,'Parent'),'SelectionType');
+        %         fprintf('cfgShow (uiTblCB) -- Selected Saccade: \n');
+        %         coord = get(get(src,'Parent'),'CurrentPoint');
+        %         fprintf('cfgShow (uiTblCB) -- Selected coordinates: %3.1f %3.1f \n', coord(1), coord(2));
+        %
+        %
+        %         jscroll = findjobj(src);
+        %         jtable = jscroll.getViewport.getView;
+        %         view = get(jscroll.getComponent(0).getView.getModel);
     end
 
 end

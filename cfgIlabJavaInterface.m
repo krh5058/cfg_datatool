@@ -55,12 +55,12 @@ switch lower(action)
         slider.origAP = AP; % Create save AP parameters
         slider.pseudoAP = AP; % Create psuedo AP parameters
         
-        % Set up cfgConfirmJFrame, attach confirmJFrame and confirmTxtFnc
-        % function to slider
-        [slider.confirmJFrame,slider.confirmTxtFnc,rszFnc] = cfgConfirmJFrame;
+        % Set up cfgConfirmJFrame, attach confirmJFrame and acquire 
+        % confirmTxtFnc function to slider
+        [slider.confirmJFrame,slider.confirmTxtFnc,cmpMvFnc] = cfgConfirmJFrame(true);
         f = ilabGetMainWinHdl; % Main window temporarily
         figure(f); % Bring figure to fron
-        rszFnc(f, slider.confirmJFrame); % Lock slider.confirmJFrame to corresponding Matlab figure     
+        cmpMvFnc(f, slider.confirmJFrame); % Lock slider.confirmJFrame to corresponding Matlab figure     
         
         % Set slider visibility and range
         set(slider.hContainer,'Visible','on');
@@ -110,26 +110,12 @@ switch lower(action)
         slider.calc.vMean = mean(vabs); % Mean velocity (deg/s) within window
         slider.calc.dist = slider.calc.vMean*((slider.pseudoAP.saccade.list(4) - slider.pseudoAP.saccade.list(3))*acqIntvl_sec); % Distance travelled (deg)
         
-        %         if importState
-        %             slider.calc.SRT;
-        %             slider.calc.ttP;
-        %
-        %              % Separate saccade calculations depending on imported data
-        %              and not velocity
-        %             % Placeholder for distance from target calculation; ** Adjust in header, table, and data structure
-        %         else
-        
         if CFG.debug
             % Format strings taken from CFG.ILABfmtStr
             fprintf(['cfgIlabJavaInterface (calc): Peak velocity (deg/s) -- %5.1f\n'],slider.calc.vPeak);
             fprintf(['cfgIlabJavaInterface (calc): Cut-off velocity (deg/s) -- %5.1f\n'],slider.calc.vCutOff);
             fprintf(['cfgIlabJavaInterface (calc): Mean velocity (deg/s) -- %5.1f\n'],slider.calc.vMean);
             fprintf(['cfgIlabJavaInterface (calc): Travel distance (deg) -- %5.1f\n'],slider.calc.dist);  
-%             if importState
-%                 fprintf(['cfgIlabJavaInterface (calc): Saccade reaction time (ms) -- %6.0f\n'],slider.calc.SRT);
-%                 fprintf(['cfgIlabJavaInterface (calc): Time to peak (ms) -- %6.0f\n'],slider.calc.ttP);
-%                  % Placeholder for distance from target calculation; ** Adjust in header, table, and data structure
-%             end
         end
         
     case 'setsacc'
@@ -141,19 +127,9 @@ switch lower(action)
         if isfield(slider,'calc')
             selsacc(5) = slider.calc.vPeak;
             selsacc(6) = slider.calc.vMean;
-            selsacc(9) = slider.calc.dist;
-            
-            %         % Related to imported data, and handled if possible
-            %         if importState
-            %             selsacc(7) = slider.calc.SRT;
-            %             selsacc(8) = slider.calc.ttP;
-            %             % Placeholder for distance from target
-            %             calculation; ** Adjust in header, table, and data
-            %             structure. Separate calculation
-            %         else
             selsacc(7) = NaN;
             selsacc(8) = NaN;
-            %         end
+            selsacc(9) = slider.calc.dist;
         else
             selsacc(5:9) = nan([1 5]);
         end

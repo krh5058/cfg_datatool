@@ -115,20 +115,23 @@ end
     end
 
     function apReturn
-        % Restoring autoplot functions
-        if CFG.debug
-            fprintf('cfgUISecure (apReturn): Restoring autoplot checkbox function.\n');
-        end
-        
         hAP = findobj('Tag','PLOT_SACCAUTO'); % Auto-plot checkbox
-        if isempty(get(hAP,'UserData'))
-            set(hAP,'Value',0); % Sets default 0, in case no prior apForceOff/apForceOn call and blank UserData
-        else
-            set(hAP,'Value',get(hAP,'UserData')); % Old auto-plot value, from UserData
+        if ~isempty(hAP) % Ignore if empty
+            % Restoring autoplot functions
+            if CFG.debug
+                fprintf('cfgUISecure (apReturn): Restoring autoplot checkbox function.\n');
+            end
+            
+            hAP = hAP(1); % Prevents bug in ilabShowSaccadeTblCB that makes new handles if previous ones weren't closed
+            if isempty(get(hAP,'UserData'))
+                set(hAP,'Value',0); % Sets default 0, in case no prior apForceOff/apForceOn call and blank UserData
+            else
+                set(hAP,'Value',get(hAP,'UserData')); % Old auto-plot value, from UserData
+            end
+            set(hAP,'UserData',[]); % Clear UserData
+            set(hAP,'Enable','on'); % Turn on ability to change this option.
+            ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
         end
-        set(hAP,'UserData',[]); % Clear UserData
-        set(hAP,'Enable','on'); % Turn on ability to change this option.
-        ilabShowSaccadeTblCB('autoplot'); % Re-evaluate callback settings
     end
 
     function mainUIOff
