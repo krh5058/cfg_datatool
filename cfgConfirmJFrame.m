@@ -151,7 +151,7 @@ attachCmpMvFnc = @applyCmpMvFnc;
         % plotting functions only occur when the user has focus already,
         % there is no reason to continously bring the jFrame to the front.
         if length(ST)==1
-            fprintf('updateFrameFocus: Executed from WindowGainedFocusCallback\n');
+%             fprintf('updateFrameFocus: Executed from WindowGainedFocusCallback\n');
             jFrame.toFront(); % Bring confirm frame to front
             drawnow;
         end

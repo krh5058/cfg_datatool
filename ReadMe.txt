@@ -1,6 +1,6 @@
 Updated: 2/27/14
 
-More comprehensive found in Google Docs and commit text:
+More comprehensive documentation found in Google Docs and commit text:
 https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
 
 Backburner feature requests:
@@ -13,6 +13,8 @@ Backburner feature requests:
 - Dotted lines aligned with slider thumbs
 
 Design Considerations:
+- Java Heap Size: 1082
+- File > Preferences > General > Java Heap Memory
 - Developed on 1680x1050 resolution screen
 	- Positioned bottom of window at 15% total screen height from bottom of screen
 	- Positioned total height of window to be 85% total screen height
@@ -29,3 +31,4 @@ Known bugs:
 - Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
 - Slider isn't 100% lined up with plot, due to track buffer.
 - Closing either "cfg_datatool" or "Saccade Results" windows typically results in loss of underlying data models or UI states.
+- cfg_datatool tables sometimes appear glitchy

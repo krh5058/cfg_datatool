@@ -129,7 +129,7 @@ if isempty(cfgWinHdl)
         'Units','normalized','Position',[.01 .3 .9 .2],...
         'HorizontalAlignment', 'left',...
         'BackgroundColor',BgColor1,...
-        'String',['Number of Error Trials: ' int2str(length(find(CFG.error)))]);
+        'String',['Number of Errored Saccades: ' int2str(length(find(CFG.error)))]);
     
     CFG.handles.hRp = [hRp hTrialsText hDropText hErrText];
     
@@ -197,7 +197,7 @@ else
     
     % 140131--Moving parts are:
     set(CFG.handles.hRp(3),'String',['Number of Dropped Trials: ' int2str(length(find(CFG.drop)))]);
-    set(CFG.handles.hRp(4),'String',['Number of Error Trials: ' int2str(length(find(CFG.error)))]);
+    set(CFG.handles.hRp(4),'String',['Number of Errored Saccades: ' int2str(length(find(CFG.error)))]);
     set(CFG.handles.hLui(3),'Data', CFG.initial.table);
     set(CFG.handles.hLui(4),'Data', CFG.final.table);
     
