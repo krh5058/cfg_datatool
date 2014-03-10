@@ -1,0 +1,30 @@
+3/6/14
+
+Update for cfg_datatool (3/6/14)
+
+Finally, I can see the light at the end of the tunnel!  Much of development time has been taken up by research and testing, but the most difficult hurdles are finished and the main functions are complete.  Currently, “Select” and “Add/Modify” are in a state where you can reliably pick and adjust saccade windows freely, calculations are performed on whichever custom saccades you define, and the data is formatted in a uniform way that is ready to be written to file.
+
+Issues at hand:
+- The last substantial hurdle is plotting of custom saccades.  You will need saccade window visualization to review your selections.  I also intend to place plot markers for your pertinent presentation events, as a reference for what the initial and final saccades correspond to.  This is a hurdle because plotting will take place on the ILAB interface, and in order to keep my toolbox hands-off (i.e. not directly changing ILAB’s code) I will need to inject custom data into underlying data models.  At this point, I’ve already injected data (non-maliciously of course) and am very familiar with how ILAB internal functions work.  So, consider this hurdle to be 10% as large (~10 hrs) as opposed to something like the range slider (70-80 hrs).
+
+- Trial data import expects very strict Excel formatting.  I’ve stressed this with Nicole and David, and provide a template attached to this e-mail.  I will also document and forward along how to produce the data in the import Excel sheet.  It’s fairly straightforward, but having a reference will help to keep that process consistent.
+
+- Features aside, the toolbox needs to be polished before I can hand it off to your lab.  This includes bugs, UI safe-handling, quality testing, and documentation.  During this step, I will also need to demonstrate validity of data calculations and verify that the output produced meets your specifications.  We can go over this in our next meeting.
+
+Completed:
+- Select and Add/Modify functions
+- By-trial data import
+- Calculations and data organization for latency and distance
+- “Error” checkboxes un-synced between initial/final
+
+Primarily Milestones:
+- Implement plotting: trial events and color-coded
+- Add “Save”/”Load” workspace
+- Add “Clear” saccade function
+- Data export
+- Deliver new UI status and demonstrate usage in current state
+
+Secondary Milestones:
+- Organize analysis and usage documentation, include as help text and ReadMe
+- Finalize menu-bar items
+- Debug and quality control
