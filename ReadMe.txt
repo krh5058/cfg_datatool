@@ -27,7 +27,6 @@ Design Considerations:
 - Error can be applied to both initial/final saccade
 
 Known bugs:
-- Double-clicking doesn’t capture correctly depending on sequence of clicks.  Can fix, but repeatedly clicking on a trial will work.
 - Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
 - Slider isn't 100% lined up with plot, due to track buffer.
 - Closing either "cfg_datatool" or "Saccade Results" windows typically results in loss of underlying data models or UI states.

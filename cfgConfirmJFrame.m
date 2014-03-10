@@ -166,7 +166,8 @@ attachCmpMvFnc = @applyCmpMvFnc;
     end
 
     function onClose(obj,evt) % When cancel button on frame is pressed
-        CFG=cfgParams('get');
+%         CFG=cfgParams('get');
+        global CFG
         
         % Determine data tool state
         request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');

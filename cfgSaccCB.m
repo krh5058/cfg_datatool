@@ -12,10 +12,23 @@ end
 % Restrict to one saccade function at a time, data tool state
 if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData')) 
     % Warning.  Data tool in current state
-    disp('warning'); % **Add better warning
+    h = warndlg(sprintf('Please complete current action -- %s\n.',CFG.stateTitle),'cfg_datatool WARNING');
+    uiwait(h);
     return;
 else
     set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',action); % Set data tool in current state
+    switch action
+        case 'select'
+            CFG.stateTitle = [CFG.base ': Select'];
+        case 'addmod'
+            CFG.stateTitle = [CFG.base ': Add/Modify'];
+        otherwise
+            if CFG.debug
+                fprintf('cfgSaccCB: Unable to set title.  Unknown action argument.\n');
+            end
+            CFG.stateTitle = CFG.base;
+    end
+    cfgUISecure('updateuititle');
 end
 
 switch action
@@ -59,9 +72,6 @@ switch action
         end
         
         cfgUISecure('rowselect');
-        
-        cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
-        cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
         
         % Set new callbacks
         jscrollInit = findjobj(CFG.handles.hLui(3));
@@ -151,23 +161,25 @@ end
     end
 
     function addDblClickCB(src,evt,currTbl)
-        %         dblclick = get(get(currTbl,'Parent'),'SelectionType');
-        persistent dblclick selected
+        persistent tCheck rowCheck tblCheck
         
-        if isempty(dblclick) % Single click
-            dblclick = tic;
-            selected = src.getSelectedRows;
-            action = false;
+        validDblClick = false; % False until conditions met
+            
+        if isempty(tCheck) % Initial
+            tCheck = tic;
+            rowCheck = src.getSelectedRows;
+            tblCheck = currTbl;
             if CFG.debug
                 fprintf(['cfgSaccCB (addDblClickCB): Single click without prior double-click conditions input.\n']);
             end
         else
             try
-                if toc(dblclick) < .75 && selected == src.getSelectedRows; % Fast enough and same row
-                    action = true;
+                if toc(tCheck) < .75 && rowCheck == src.getSelectedRows && tblCheck == currTbl; % Fast enough and same row
+                    validDblClick = true;
                 else % Single click, hasn't met conditions
-                    dblclick = [];
-                    action = false;
+                    tCheck = tic;
+                    rowCheck = src.getSelectedRows;
+                    tblCheck = currTbl;
                     if CFG.debug
                         fprintf(['cfgSaccCB (addDblClickCB): Single click without meeting double-click capture conditions.\n']);
                     end
@@ -178,13 +190,17 @@ end
                     fprintf('cfgSaccCB (addNewCB): %s\n',ME.message);
                     throw(ME)
                 end
-                dblclick = [];
-                action = false;
+                tCheck = [];
+                rowCheck = [];
+                tblCheck = [];
             end
         end
         
-        if action
-            dblclick = [];
+        if validDblClick
+            % Reset persistent variables
+            tCheck = [];
+            rowCheck = [];
+            tblCheck = [];
             
             if CFG.debug
                 fprintf(['cfgSaccCB (addDblClickCB): Double-click captured.\n']);
@@ -198,13 +214,15 @@ end
                     fprintf(['cfgSaccCB (addDblClickCB): Selected row -- %i\n'], (src.getSelectedRows+1));
                 end
                 
-                selRow = double(src.getSelectedRows + 1);
+                selRow = double(src.getSelectedRows + 1); % Returns 0-indexed int32
                 
                 cfgUISecure('anyselect'); % Release row select
                 cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
+                cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+                cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
                 cfgUISecure('forceSLSelect1'); % Force saccade list box value to 1
                 
-                set(currTbl,'UserData',selRow);
+                set(currTbl,'UserData',selRow); % For cfgIlabJavaInterface.m, to pull row and table with row (not empty, and cleared after to determine this).
                 
                 % Set main window UI controls
                 cfgUISecure('mainUIOff');

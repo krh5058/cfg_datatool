@@ -14,20 +14,26 @@ if isfield(CFG,'tbactive')
     end
 end
 
-% ILAB = ilabGetILAB;
+%% Everything beneath, runs only on start-up
+ILAB = ilabGetILAB;
 AP = ilabGetAnalysisParms; % Original AP
-% PP = ilabGetPlotParms;
-
+PP = ilabGetPlotParms;
+    
 if isempty(AP.saccade.list) || isempty(AP.saccade.table)
     h = warndlg(['Please generate saccade table first (Analysis > Saccades...).'],'cfg_datatool WARNING');
     uiwait(h);
     return;
 end
 
+% Back-ups
+CFG.ILAB = ILAB;
+CFG.AP = AP;
+CFG.PP = PP;
+
 % Initialize Global Parameters
 cfgParams('init');
 
-% Add RangeSlider, but make invisible
+% Add RangeSlider, but not visible
 cfgRangeSlider;
 set(findobj('Tag','cfgSlider'),'Visible','off');
 
@@ -38,7 +44,7 @@ cfgWinMenuHdl = findobj('Tag',CFG.CFG_TAGS{1});
 if isempty(cfgWinMenuHdl)
     f = findobj('Tag','WINDOWS_MTAG');
     uimenu(f, 'Label', 'cfg_datatool',   'Enable', 'on',...
-        'Tag', CFG.CFG_TAGS{1}, 'Callback','cfgShow'); % Callback is 
+        'Tag', CFG.CFG_TAGS{1}, 'Callback','cfgShow');
 end
 
 % Display is default cfgShow call (moving parts only)

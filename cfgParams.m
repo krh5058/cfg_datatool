@@ -1,11 +1,11 @@
-function CFG = cfgParams(action, varargin)
+function cfgParams(action, varargin)
 % cfgParams.m
 % 2/27/14
 % Author: Ken Hwang
 
 global CFG
 
-if ~isempty(CFG)
+if isfield(CFG,'debug')
     if CFG.debug
         fprintf('cfgParams: Received request --- %s.\n',action);
     end
@@ -19,6 +19,10 @@ if strcmpi(action, 'init')
     CFG.debug = 1;
     
     ILAB = ilabGetILAB;
+    
+    % Usage state for title bar
+    CFG.base = 'cfg_datatool';
+    CFG.stateTitle = CFG.base;
     
     % Tag strings
     CFG.CFG_TAGS = {'ILABWIN_CFGMTAG','CFGWIN_TAG',... % 1-2 (General)
@@ -80,7 +84,7 @@ if strcmpi(action, 'init')
     
     CFG.drop = false([CFG.trials 1]); % Synced
     CFG.error = false([CFG.trials 2]); % Not synced (1=initial, 2=final)
-    
+      
 elseif strcmpi(action, 'load')
     
     if CFG.debug
@@ -94,6 +98,12 @@ elseif strcmpi(action, 'save')
     end   
     
 elseif strcmpi(action, 'import')
+    
+    if CFG.importState
+        % Warning.  Data tool in current state
+        h = warndlg(sprintf('Imported data currently exists.\nKeep in mind that your workspace will not update to take new data into account.\n.'),'cfg_datatool WARNING');
+        uiwait(h);
+    end
     
     if CFG.debug
         fprintf('cfgParams(import): Importing CFG experimental data.\n');

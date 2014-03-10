@@ -73,12 +73,21 @@ switch lower(action)
             fprintf('cfgUISecure: Clearing data tool state -- %s.\n', saccaction);
         end
         set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',[]);
+        
+        % Update title after state change
+        CFG.stateTitle = CFG.base;
+        cfgUISecure('updateuititle');
     case 'clearilabplot'
         if CFG.debug
             fprintf('cfgUISecure: Clearing saccade list selections and plotting.\n');
         end        
         set(findobj('Tag','SaccadeListbox'),'Value',[]);
         ilabPlotSaccade;
+    case 'updateuititle'
+        if CFG.debug
+            fprintf('cfgUISecure: Updating UI title -- %s.\n',CFG.stateTitle);
+        end
+        set(findobj('Tag', CFG.CFG_TAGS{2}),'Name', CFG.stateTitle); % Set UI title
     otherwise
         if CFG.debug
             fprintf(['cfgUISecure: Unknown action -- %s\n'],action);

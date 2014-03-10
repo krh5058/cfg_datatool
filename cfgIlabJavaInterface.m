@@ -160,23 +160,39 @@ switch lower(action)
         % Reset slider visibility
         set(slider.hContainer,'Visible','off');
             
+        % Check if stored AP was lost.  Use back up if not present.
         if ~isfield(slider,'origAP')
             if CFG.debug
-                fprintf(['cfgIlabJavaInterface (cleanup): Warning -- original AP lost from ''slider'' persistent variable.\n']);
+                fprintf(['cfgIlabJavaInterface (cleanup): Warning -- original Analysis Parameters lost from ''slider'' persistent variable.\n']);
                 fprintf(['cfgIlabJavaInterface (cleanup): Possibly cleared due to successive calls for ''cleanup''.\n']);
-            end
+                fprintf(['cfgIlabJavaInterface (cleanup): Restoring with back-up Analysis Parameters.\n']);
+            end            
+            % Use back-up AP
+            ilabSetAnalysisParms(CFG.AP);            
         else
-            
-            % Reset ILAB parameters
+            % Reset AP parameters and remove from persistent variable field
             ilabSetAnalysisParms(slider.origAP);
-            
-            % Remove persistent parameter fields
-            slider = rmfield(slider,{'confirmJFrame','confirmTxtFnc','origAP','pseudoAP'});
-            if isfield(slider,'calc')
-                slider = rmfield(slider,'calc');
-            end
+            slider = rmfield(slider,'origAP');            
+        end    
+        
+        % Remove persistent variable fields that are present (avoids error
+        % if not a field)
+        if isfield(slider,'calc')
+            slider = rmfield(slider,'calc');
         end
-
+        
+        if isfield(slider,'confirmJFrame')
+            slider = rmfield(slider,'confirmJFrame');
+        end
+        
+        if isfield(slider,'confirmTxtFnccalc')
+            slider = rmfield(slider,'confirmTxtFnc');
+        end
+        
+        if isfield(slider,'pseudoAP')
+            slider = rmfield(slider,'pseudoAP');
+        end
+      
     otherwise % Default is to plot
         trickPlotSaccade;
 end
