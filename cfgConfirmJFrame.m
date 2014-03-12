@@ -41,7 +41,6 @@ top.setPreferredSize(Dimension(300,100));
 top.add(startLabel);
 top.add(endLabel);
 
-
 % Set-up bottom pane
 bot = JPanel();
 bot.setMinimumSize(Dimension(300,45));
@@ -166,46 +165,9 @@ attachCmpMvFnc = @applyCmpMvFnc;
     end
 
     function onClose(obj,evt) % When cancel button on frame is pressed
-%         CFG=cfgParams('get');
-        global CFG
-        
-        % Determine data tool state
-        request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
-        
-        if ~isempty(request)
-            if CFG.debug
-                fprintf(['cfgConfirmJFrame (onClose): Current data tool state -- %s\n'], request);
-            end
-            
-            switch request
-                case 'addmod'
-                    
-                    % Clean-up
-                    cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
-                    cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
-                    cfgUISecure('clearsaccaction'); % Free UI from state restrictions
-                    cfgUISecure('mainUIOn'); % Re-enable main UI functions
-                    cfgIlabJavaInterface('cleanup'); % Clean up persistent variable
-%                     cfgUISecure('clearilabplot'); % Clear ILAB plotting
-                    
-                case 'select'
-                    
-                    % Clean-up
-                    cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
-                    cfgUISecure('clearsaccaction'); % Free UI from state restrictions    
-                    
-                otherwise
-                    if CFG.debug
-                        fprintf(['cfgConfirmJFrame (onClose): Unknown data tool state-- %s\n'], request);
-                    end
-            end
-        else
-            if CFG.debug
-                fprintf(['cfgConfirmJFrame (onClose): Warning -- data tool state lost\n']);
-            end
-        end
-        frame.setVisible(0);
-        frame.dispose();
+        cfgUISecure('statecleanup'); % Clean up UI functions based on state
+%         frame.setVisible(0);
+%         frame.dispose();
     end
 
 end

@@ -88,6 +88,74 @@ switch lower(action)
             fprintf('cfgUISecure: Updating UI title -- %s.\n',CFG.stateTitle);
         end
         set(findobj('Tag', CFG.CFG_TAGS{2}),'Name', CFG.stateTitle); % Set UI title
+    case 'statecleanup'      
+        % Determine data tool state
+        state = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
+        
+        if ~isempty(state)
+            if CFG.debug
+                fprintf(['cfgUISecure (statecleanup): Current data tool state -- %s\n'], state);
+            end
+            
+            switch state
+                case 'addmod'
+                    
+%                     if 1==0 % For cfg UI table clean-up: half-step routine during table select
+%                         cfgUISecure('anyselect'); % Release row select
+%                         cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
+%                         %                         cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+%                         jFrameFig = NaN;
+%                     else
+                        % Clean-up
+                        cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
+                        cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
+                        cfgUISecure('clearsaccaction'); % Free UI from state restrictions
+                        cfgUISecure('mainUIOn'); % Re-enable main UI functions
+                        cfgIlabJavaInterface('cleanup'); % Clean up persistent variables
+                        %                     cfgUISecure('clearilabplot'); % Clear ILAB plotting
+                        
+                        jFrameFig = ilabGetMainWinHdl;
+%                     end
+                    
+                case 'select'
+                    
+                    % Clean-up
+                    cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
+                    cfgUISecure('clearsaccaction'); % Free UI from state restrictions
+                    
+                    TBL_TAG = 'SaccadeTable';
+                    jFrameFig = findobj('Tag',TBL_TAG);
+        
+                otherwise
+                    if CFG.debug
+                        fprintf(['cfgUISecure (statecleanup): Unknown data tool state -- %s\n'], state);
+                        fprintf(['cfgUISecure (statecleanup): No clean up performed.\n'], state);
+                        fprintf(['cfgUISecure (statecleanup): No frame disposal performed.\n'], state);
+                    end
+            end
+            
+            jf = findjobj(jFrameFig);
+            jf = jf(1); % Top-level component (Matlab figure)
+            jFrame = get(jf,'ComponentMovedCallback');
+            
+            % Remove if an associated jFrame is present
+            % Expected empty if user hasn't selected a row for Add/Modify
+            if ~isempty(jFrame)
+                jFrame = jFrame{2};
+                
+                if CFG.debug
+                    fprintf(['cfgUISecure (statecleanup): JFrame disposal, associated with figure Tag -- %s\n'], get(jFrameFig,'Tag'));
+                end
+                
+                jFrame.setVisible(0);
+                jFrame.dispose();
+            end
+            
+        else
+            if CFG.debug
+                fprintf(['cfgUISecure (statecleanup): Neutral data tool state.\n']);
+            end
+        end
     otherwise
         if CFG.debug
             fprintf(['cfgUISecure: Unknown action -- %s\n'],action);
@@ -200,6 +268,3 @@ end
     end
 
 end
-
-
-

@@ -1,5 +1,5 @@
 % cfg_datatool.m
-% 2/27/14
+% 3/12/14
 % Author: Ken Hwang
 
 global CFG
@@ -8,8 +8,11 @@ global CFG
 if isfield(CFG,'tbactive')
     if CFG.tbactive
         if CFG.debug
-            fprintf('cfg_datatool: Toolbox already active.');
+            fprintf('cfg_datatool: Toolbox already active.\n');
         end
+        h = warndlg('Toolbox in use.','cfg_datatool WARNING');
+        uiwait(h);
+        cfgShow;
         return;
     end
 end
@@ -37,7 +40,7 @@ cfgParams('init');
 cfgRangeSlider;
 set(findobj('Tag','cfgSlider'),'Visible','off');
 
-% Find current UIMenu handle on ILAB main window
+% Find current cfg_datatool UIMenu handle from ILAB 'Window' menu
 cfgWinMenuHdl = findobj('Tag',CFG.CFG_TAGS{1});
 
 % If empty (most likely), apply to "Windows" UImenu on ILAB main window

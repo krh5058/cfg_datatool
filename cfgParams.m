@@ -1,6 +1,6 @@
 function cfgParams(action, varargin)
 % cfgParams.m
-% 2/27/14
+% 3/12/14
 % Author: Ken Hwang
 
 global CFG
@@ -12,7 +12,7 @@ if isfield(CFG,'debug')
 end
 
 if strcmpi(action, 'init')
-    fprintf('cfgParams(init): Initializing global parameters.\n');
+    fprintf('cfgParams (init): Initializing global parameters.\n');
     
     % Toolbox general
     CFG.tbactive = true;
@@ -30,8 +30,6 @@ if strcmpi(action, 'init')
         'CFGWIN_TRIALSTEXT','CFGWIN_DROPTEXT','CFGWIN_ERRTEXT',... % 7-9 (UpperRight)
         'CFGWIN_INITTXT','CFGWIN_FINTXT',... % 10-11 (Table Text)
         'CFGWIN_INITTBL','CFGWIN_FINTBL'}; % 12-13 (Tables)
-%         'CFGWIN_INITHEAD','CFGWIN_FINHEAD',... % 10-11 (Headers)
-%         'CFGWIN_INITLB','CFGWIN_FINLB'}; % 12-13 (LBs)
     CFG.CFG_MTAGS = cell([1 6]);
     CFG.CFG_MTAGS{1} = {'CFGMENU_FILE', 'CFGMENU_IMPORT', 'CFGMENU_EXPORTLABEL', 'CFGMENU_EXCFG', 'CFGMENU_EXORIG', 'CFGMENU_EXALL', 'CFGMENU_EXAUTOPARAM', 'CFGMENU_SAVE', 'CFGMENU_LOAD', 'CFGMENU_EXIT'}; % 1, 1-10
     CFG.CFG_MTAGS{2} = {'CFGMENU_EDIT', 'CFGMENU_EDITPARAMS'}; % 2, 1-2
@@ -97,6 +95,8 @@ elseif strcmpi(action, 'save')
         fprintf('cfgParams(save): Saving new CFG parameters.\n');
     end   
     
+    % Saving data only enabled after import.  Leave tbactive, importedData true
+    
 elseif strcmpi(action, 'import')
     
     if CFG.importState
@@ -106,7 +106,7 @@ elseif strcmpi(action, 'import')
     end
     
     if CFG.debug
-        fprintf('cfgParams(import): Importing CFG experimental data.\n');
+        fprintf('cfgParams (import): Importing CFG experimental data.\n');
     end
     
     [f,p] = uigetfile('*.xlsx');
@@ -201,12 +201,12 @@ elseif strcmpi(action, 'import')
 elseif strcmpi(action, 'get')
     
     if CFG.debug
-        fprintf('cfgParams(get): CFG parameters requested.\n');
+        fprintf('cfgParams (get): CFG parameters requested.\n');
     end
     
 elseif strcmpi(action, 'set')
     if CFG.debug
-        fprintf('cfgParams(set): Setting CFG parameter --- %s.\n',varargin{2});
+        fprintf('cfgParams (set): Setting CFG parameter --- %s.\n',varargin{2});
     end
     
     % On drop
@@ -228,8 +228,8 @@ elseif strcmpi(action, 'set')
     
 elseif strcmpi(action, 'setsacc')
     if CFG.debug
-        fprintf('cfgParams(setsacc): CFG saccade value set request.\n');
-        fprintf('cfgParams(setsacc): %s saccade, at index %i , changed.\n', varargin{1},varargin{2});
+        fprintf('cfgParams (setsacc): CFG saccade value set request.\n');
+        fprintf('cfgParams (setsacc): %s saccade, at index %i , changed.\n', varargin{1},varargin{2});
     end
     
     saccin = varargin{3};
@@ -258,12 +258,24 @@ elseif strcmpi(action, 'setsacc')
               
 elseif strcmpi(action,'reset')
     if CFG.debug
-        fprintf('cfgParams(reset): CFG parameter reset requested.\n');
+        fprintf('cfgParams (reset): CFG parameter reset requested.\n');
     end
     
     clear global CFG
     
     cfgParams('init');
+    
+elseif strcmpi(action,'exit')
+    if CFG.debug
+        fprintf('cfgParams (exit): Exit requested. Parameter clean up.\n');
+    end
+    
+    % Restore back-ups
+    ilabSetILAB(CFG.ILAB);
+    ilabSetAnalysisParms(CFG.AP);
+    ilabSetPlotParms(CFG.PP);
+        
+    clear global CFG
     
 else
     error('cfgParams: Unrecognized action.');

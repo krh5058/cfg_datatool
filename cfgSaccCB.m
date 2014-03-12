@@ -35,7 +35,7 @@ switch action
     case 'select'
         
         if CFG.debug
-            fprintf('cfgSaccCB: Select saccade request.\n');
+            fprintf('cfgSaccCB (select): Select saccade request.\n');
         end
         
         % Get the saccade table and listbox
@@ -46,7 +46,7 @@ switch action
         
         if isempty(hST) % If saccade table was closed for some reason
             if CFG.debug
-                fprintf('cfgSaccCB: SaccadeTable absent, re-initializing.\n');
+                fprintf('cfgSaccCB (select): SaccadeTable absent, re-initializing.\n');
             end
             ilabShowSaccadeTblCB('init')
             LB_TAG = 'SaccadeListbox';
@@ -68,7 +68,7 @@ switch action
     case 'addmod'
         
         if CFG.debug
-            fprintf('cfgSaccCB: Add/Modify new saccade request.\n');
+            fprintf('cfgSaccCB (addmod): Add/Modify new saccade request.\n');
         end
         
         cfgUISecure('rowselect');
@@ -89,8 +89,8 @@ switch action
     case 'clear'
         
         if CFG.debug
-            fprintf('cfgSaccCB: Clear saccade request.\n');
-        end
+            fprintf('cfgSaccCB (clear): Clear saccade request.\n');
+        end      
         
     otherwise
         if CFG.debug
@@ -131,11 +131,12 @@ end
             
             cfgShow;
             
-            % Clean-up: Auto-plot return reset saccade action
-            cfgUISecure('apReturn'); % Assuming apForceOn prior to this function call
-            cfgUISecure('clearsaccaction'); % Free UI from function restrictions
-            ST.confirmJFrame.setVisible(0);
-            ST.confirmJFrame.dispose();
+            % Clean-up: Auto-plot return, reset saccade action, execute
+            % 'ClosedWindow' callback on confirmJFrame.
+            cfgUISecure('statecleanup'); % Clean up UI functions based on state            
+
+%             ST.confirmJFrame.setVisible(0);
+%             ST.confirmJFrame.dispose();
             
             if CFG.debug
                 fprintf('cfgSaccCB (addSelectCB) -- Selected Saccade: \n');

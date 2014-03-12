@@ -11,11 +11,9 @@ end
 
 persistent slider
 
-% Set slider handles to prevent need to call
-if isempty(slider)
-    slider.hContainer = findobj('Tag','cfgSlider');
-    slider.jComponent = findjobj(slider.hContainer);
-end
+% Update slider handles to ensure correct references
+slider.hContainer = findobj('Tag','cfgSlider');
+slider.jComponent = findjobj(slider.hContainer);
 
 switch lower(action)
     case 'setup'
@@ -59,7 +57,7 @@ switch lower(action)
         % confirmTxtFnc function to slider
         [slider.confirmJFrame,slider.confirmTxtFnc,cmpMvFnc] = cfgConfirmJFrame(true);
         f = ilabGetMainWinHdl; % Main window temporarily
-        figure(f); % Bring figure to fron
+        figure(f); % Bring figure to front
         cmpMvFnc(f, slider.confirmJFrame); % Lock slider.confirmJFrame to corresponding Matlab figure     
         
         % Set slider visibility and range
@@ -165,7 +163,8 @@ switch lower(action)
             if CFG.debug
                 fprintf(['cfgIlabJavaInterface (cleanup): Warning -- original Analysis Parameters lost from ''slider'' persistent variable.\n']);
                 fprintf(['cfgIlabJavaInterface (cleanup): Possibly cleared due to successive calls for ''cleanup''.\n']);
-                fprintf(['cfgIlabJavaInterface (cleanup): Restoring with back-up Analysis Parameters.\n']);
+                fprintf(['cfgIlabJavaInterface (cleanup): Ignore if on ''Exit'', which calls ''cleanup'' independently.\n']);
+                fprintf(['cfgIlabJavaInterface (cleanup): Restoring with back-up Analysis Parameters, just in case.\n']);
             end            
             % Use back-up AP
             ilabSetAnalysisParms(CFG.AP);            
@@ -177,6 +176,14 @@ switch lower(action)
         
         % Remove persistent variable fields that are present (avoids error
         % if not a field)
+        if isfield(slider,'hContainer')
+            slider = rmfield(slider,'hContainer');
+        end
+        
+        if isfield(slider,'jComponent')
+            slider = rmfield(slider,'jComponent');
+        end
+            
         if isfield(slider,'calc')
             slider = rmfield(slider,'calc');
         end

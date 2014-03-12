@@ -18,12 +18,13 @@ if isempty(cfgWinHdl)
         'Name', CFG.stateTitle,...
         'MenuBar', 'none',...
         'NumberTitle', 'off', ...
-        'Resize', 'off',...
-        'Color', [.95 1 .95]);
-    %     'CloseRequestFcn','ilabShowSaccadeTblCB(''close'')');
+        'Resize', 'off', ...
+        'Color', [.95 1 .95], ...
+        'CloseRequestFcn',@closeFcn);
     %     Currently, all Children handles are deleted on close
     %     request as long as their visibility remains 'on'
     
+    % Set figure size and position
     scrsz = get(0,'ScreenSize');
     S = get(gcf, 'Position'); % Position of default figure
     S(2) =   0.15*scrsz(4);      % bottom
@@ -32,8 +33,8 @@ if isempty(cfgWinHdl)
     S(4) = 0.85*scrsz(4);   % height
     set(gcf, 'Position', S);
     
+    % Background color
     BgColor1 = [.95 1 .95];
-    %     BgColor2 = [1 1 .95];
     
     % Menu Items
     m_file = uimenu(cfgWinHdl, 'Label', 'File', 'Tag', CFG.CFG_MTAGS{1}{1});
@@ -45,7 +46,7 @@ if isempty(cfgWinHdl)
     uimenu(hEx, 'Label', 'Auto-saccade parameters', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','','Enable',eFlag);
     uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','','Enable',eFlag);
     uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{9}, 'Callback','');
-    uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{10}, 'Callback','');
+    uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{10}, 'Callback',@closeFcn);
     
     m_edit = uimenu(cfgWinHdl, 'Label', 'Edit', 'Tag', CFG.CFG_MTAGS{2}{1});
     uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback','','Enable',eFlag);
@@ -227,6 +228,35 @@ figure(cfgWinHdl);
         %         jscroll = findjobj(src);
         %         jtable = jscroll.getViewport.getView;
         %         view = get(jscroll.getComponent(0).getView.getModel);
+    end
+
+    function closeFcn(src,evt)
+                   
+        % User prompt
+        exitResponse = questdlg('Are you sure you want to exit?', ...
+        'Close cfg_datatool', ...
+            'Yes','No','No');
+        
+        if strcmpi(exitResponse,'No')
+            return;
+        end
+        
+        % Remove RangeSlider
+        set(findobj('Tag','cfgSlider'),'Visible','off');
+        delete(findobj('Tag','cfgSlider'))
+        
+        % Remove cfg_datatool UIMenu handle from ILAB 'Window' menu
+        cfgWinMenuHdl = findobj('Tag',CFG.CFG_TAGS{1});
+        if ~isempty(cfgWinMenuHdl)
+            delete(findobj('Tag', CFG.CFG_TAGS{1}))
+        end
+        
+        cfgUISecure('statecleanup'); % Clean up UI functions based on state
+        delete(get(findobj('Tag', CFG.CFG_TAGS{2}),'Children')); % Delete all cfg_datatool children
+        delete(findobj('Tag', CFG.CFG_TAGS{2})); % Delete cfg_datatool
+        
+        cfgParams('exit'); % Clear global values     
+        
     end
 
 end
