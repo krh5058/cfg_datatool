@@ -44,8 +44,8 @@ if isempty(cfgWinHdl)
     uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','','Enable',eFlag);
     uimenu(hEx, 'Label', 'All saccades', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','','Enable',eFlag);
     uimenu(hEx, 'Label', 'Auto-saccade parameters', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','','Enable',eFlag);
-    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','','Enable',eFlag);
-    uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{9}, 'Callback','');
+    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','cfgParams(''save'')','Enable',eFlag);
+    uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{9}, 'Callback','cfgParams(''load'')');
     uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{10}, 'Callback',@closeFcn);
     
     m_edit = uimenu(cfgWinHdl, 'Label', 'Edit', 'Tag', CFG.CFG_MTAGS{2}{1});

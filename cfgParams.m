@@ -18,6 +18,11 @@ if strcmpi(action, 'init')
     CFG.tbactive = true;
     CFG.debug = 1;
     
+    % Directory path
+    p = mfilename('fullpath');
+    p = fileparts(p);
+    CFG.usrDir = [p filesep 'usr'];
+    
     ILAB = ilabGetILAB;
     
     % Usage state for title bar
@@ -85,17 +90,127 @@ if strcmpi(action, 'init')
       
 elseif strcmpi(action, 'load')
     
+    % Ensure neutral state
+    if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData'))
+        % Warning.  Data tool in current state
+        h = warndlg(sprintf('Please complete current action -- %s\n.',CFG.stateTitle),'cfg_datatool WARNING');
+        uiwait(h);
+        return;
+    end
+    
+    currentDir = pwd;
+    cd(CFG.usrDir)
+    [f,p] = uigetfile('*.mat');
+    cd(currentDir);
+        
+    if isequal(f,0) || isequal(p,0)
+        if CFG.debug
+            fprintf('cfgParams (load): Action ''uigetfile'' cancelled.\n');
+        end
+        return;
+    end
+
     if CFG.debug
-        fprintf('cfgParams(load): Loading old CFG parameters.\n');
+        fprintf('cfgParams (load): Loading old CFG parameters from %s.\n',[p f]);
+    end
+    loadedCFG = load([p f]);
+    
+    ILAB = ilabGetILAB; % Keep as ilabGetILAB, to pull appropriate session data from ILAB
+    
+    if CFG.debug
+        fprintf('cfgParams (load): Current ILAB subject identifier %s.\n',ILAB.subject);
+        fprintf('cfgParams (load): Loaded CFG subject identifier %s.\n',loadedCFG.CFG.subject);
+    end
+    
+    if ~strcmp(ILAB.subject,loadedCFG.CFG.subject)
+        h = warndlg(sprintf(['The loaded subject identifier does not match your current ILAB session.', ...
+            '\n\nFile: %s', ...
+            '\n\nLoaded subject Identifier: %s', ...
+            '\n\nCurrent subject identifier: %s', ...
+            '\n\nPrevious analysis parameters may mismatch with the current data set.', ...
+            '\nPress ''OK'' to continue.'], ...
+            [p f],loadedCFG.CFG.subject,ILAB.subject),'cfg_datatool WARNING');
+        uiwait(h);
+    end
+    
+    if CFG.debug
+        fprintf('cfgParams (load): Reinstating session-specific UI handles from current session.\n');
+    end
+    
+    loadedCFG.CFG.handles = CFG.handles;
+    
+    if CFG.debug
+        fprintf('cfgParams (load): Replacing current CFG with loaded CFG and updating UI.\n');
     end    
+    
+    CFG = loadedCFG.CFG;
+    
+    cfgShow;
     
 elseif strcmpi(action, 'save')
     
+    % Define a session identifier if it does not exist
+    if ~isfield(CFG,'saveFile')
+        matname = [CFG.subject '_' datestr(now,30)];
+        CFG.saveFile = matname;
+    else % Prompt for overwrite
+        saveResponse = questdlg(sprintf('Overwrite file: %s.mat?',CFG.saveFile), ...
+            'Close cfg_datatool', ...
+            'Overwrite','Rename','Cancel','Cancel');
+        
+        switch saveResponse
+            case 'Overwrite'
+                matname = CFG.saveFile;
+            case 'Rename'
+                prompt={'Enter a new name for you save file (avoid spaces):'};
+                name='Rename save file';
+                numlines=1;
+                defaultanswer={CFG.saveFile};
+   
+                answer=inputdlg(prompt,name,numlines,defaultanswer);
+                
+                if isempty(answer)
+                    return;
+                else
+                    CFG.saveFile = answer{1};
+                    matname = CFG.saveFile;
+                end
+                
+            case 'Cancel'
+                return;
+        end
+    end
+    
+    temp = CFG;
+    
     if CFG.debug
-        fprintf('cfgParams(save): Saving new CFG parameters.\n');
+        fprintf('cfgParams (save): Setting state-dependent parameters to neutral.\n');
     end   
     
-    % Saving data only enabled after import.  Leave tbactive, importedData true
+    temp.stateTitle = temp.base;
+    
+    if CFG.debug
+        fprintf('cfgParams (save): Discarding session-specific UI handles from save file.\n');
+    end
+    
+    temp.handles = [];
+    
+    if CFG.debug
+        fprintf('cfgParams (save): Saving CFG parameters.\n');
+        fprintf('cfgParams (save): Saving file, %s, to directory, %s.\n',[matname '.mat'],CFG.usrDir);
+    end   
+    
+    % Swapping out CFG for temp
+    CFGold = CFG;
+    CFG = temp;
+    
+    % Saving all CFG global parameters
+    save([CFG.usrDir filesep matname],'CFG');
+    
+    % Resetting CFG
+    CFG = CFGold;
+    
+    msgbox(sprintf('Saving file...\n\n%s\n\nto directory\n\n%s.',[matname '.mat'],CFG.usrDir),'cfg_datatool: Save','modal');
     
 elseif strcmpi(action, 'import')
     
