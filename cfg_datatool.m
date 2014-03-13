@@ -18,9 +18,9 @@ if isfield(CFG,'tbactive')
 end
 
 %% Everything beneath, runs only on start-up
-ILAB = ilabGetILAB;
-AP = ilabGetAnalysisParms; % Original AP
-PP = ilabGetPlotParms;
+ILAB = ilabGetILAB; % Keep accessor function
+AP = ilabGetAnalysisParms; % Keep accessor function
+PP = ilabGetPlotParms; % Keep accessor function
     
 if isempty(AP.saccade.list) || isempty(AP.saccade.table)
     h = warndlg(['Please generate saccade table first (Analysis > Saccades...).'],'cfg_datatool WARNING');

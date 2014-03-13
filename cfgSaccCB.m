@@ -16,6 +16,11 @@ if ~isempty(get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData'))
     uiwait(h);
     return;
 else
+    
+    if CFG.debug
+        fprintf('cfgSaccCB: Setting data tool state -- %s\n.',action);
+    end
+
     set(findobj('Tag',CFG.CFG_TAGS{2}),'UserData',action); % Set data tool in current state
     switch action
         case 'select'
@@ -108,18 +113,18 @@ end
                 return;
             end
             
-            AP = ilabGetAnalysisParms;
+            AP = CFG.AP;
             
             % Get trials and selected saccade index
             selsacc = AP.saccade.list(selection,:);
             
-            wndwTxtVals = {int2str(selsacc(1,3)*ilabGetAcqIntvl), int2str(selsacc(1,4)*ilabGetAcqIntvl)}; % First saccade only
+            wndwTxtVals = {int2str(selsacc(1,3)*CFG.acqIntvl), int2str(selsacc(1,4)*CFG.acqIntvl)}; % First saccade only
             setappdata(ST.confirmJFrame,'WindowTxtVals', wndwTxtVals);
             
             % Update ST.confirmJFrame
             ST.confirmTxtFnc(ST.confirmJFrame);
             
-            saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %3d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1),selsacc(2),selsacc(3)*ilabGetAcqIntvl,selsacc(4)*ilabGetAcqIntvl), ...
+            saccif = questdlg(sprintf('Trial: %4d\nSaccade Number: %3d\nStart (ms): %6.0f\nEnd (ms): %6.0f\n\nInitial or Final?',selsacc(1),selsacc(2),selsacc(3)*CFG.acqIntvl,selsacc(4)*CFG.acqIntvl), ...
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
             
@@ -148,9 +153,9 @@ end
         elseif strcmp(dblclick, 'normal') % Single click will continue to plot and update ConfirmJFrame
             % Get selection
             selection = get(src,'Value');
-            AP = ilabGetAnalysisParms;
+            AP = CFG.AP;
             selsacc = AP.saccade.list(selection,:); 
-            wndwTxtVals = {int2str(selsacc(1,3)*ilabGetAcqIntvl), int2str(selsacc(1,4)*ilabGetAcqIntvl)}; % First saccade only
+            wndwTxtVals = {int2str(selsacc(1,3)*CFG.acqIntvl), int2str(selsacc(1,4)*CFG.acqIntvl)}; % First saccade only
             setappdata(ST.confirmJFrame,'WindowTxtVals', wndwTxtVals);
             
             % Update ST.confirmJFrame
@@ -243,7 +248,7 @@ end
                 set(hc, 'Value', selRow);
                 
                 % Set plot parms trial to selected trial
-                PP = ilabGetPlotParms;
+                PP = CFG.PP;
                 PP.trialList = selRow;
                 ilabSetPlotParms(PP);
                 ilabDrawCoordPlot;

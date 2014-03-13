@@ -48,8 +48,8 @@ switch lower(action)
         end
                 
         % Get ilab parameters
-        PP = ilabGetPlotParms;
-        AP = ilabGetAnalysisParms;
+        PP = CFG.PP;
+        AP = CFG.AP;
         slider.origAP = AP; % Create save AP parameters
         slider.pseudoAP = AP; % Create psuedo AP parameters
         
@@ -80,7 +80,7 @@ switch lower(action)
         end
            
         % ilabVelocityPlotCB.m/drawVelocityTraces
-        PP = ilabGetPlotParms;
+        PP = CFG.PP;
         
          % Shift relative to start of PP.index (because that's how PP.data is structured)
          % Shift start index back 1, because slider index already accounts
@@ -95,7 +95,7 @@ switch lower(action)
         %         vx = diff(trialx); % (delta pix)/(delta sample)
         %         vy = diff(trialy); % (delta pix)/(delta sample)
 
-        acqIntvl_ms = ilabGetAcqIntvl;
+        acqIntvl_ms = CFG.acqIntvl;
         acqIntvl_sec = acqIntvl_ms/1000;
         [pixPerDegH, pixPerDegV] = ilabPixelsPerDegree; % pix/deg
         
@@ -211,7 +211,7 @@ end
         hiVal = javaMethodEDT('getHighValue',slider.jComponent);
         
         % Create and set cell array for slider.confirmJFrame app data
-        wndwTxtVals = {int2str(lowVal*ilabGetAcqIntvl), int2str(hiVal*ilabGetAcqIntvl)};
+        wndwTxtVals = {int2str(lowVal*CFG.acqIntvl), int2str(hiVal*CFG.acqIntvl)};
         setappdata(slider.confirmJFrame,'WindowTxtVals', wndwTxtVals);
         
         % Update slider.confirmJFrame

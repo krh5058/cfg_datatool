@@ -12,7 +12,7 @@ Backburner feature requests:
 	- Currently, saccade plotting is simply cleared.
 - Dotted lines aligned with slider thumbs
 
-Design Considerations:
+Implementation Considerations:
 - Java Heap Size: 1082
 - File > Preferences > General > Java Heap Memory
 - Developed on 1680x1050 resolution screen
@@ -24,7 +24,7 @@ Design Considerations:
 	- version -java
 		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode
 	- JIDE compatibility
-- Error can be applied to both initial/final saccade
+- Assumed Excel compatibility
 
 Known bugs:
 - Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.

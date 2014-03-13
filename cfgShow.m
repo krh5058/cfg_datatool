@@ -39,14 +39,14 @@ if isempty(cfgWinHdl)
     % Menu Items
     m_file = uimenu(cfgWinHdl, 'Label', 'File', 'Tag', CFG.CFG_MTAGS{1}{1});
     uimenu(m_file, 'Label', 'Import trial data', 'Tag', CFG.CFG_MTAGS{1}{2}, 'Callback','cfgParams(''import'');');
-    hEx = uimenu(m_file, 'Label', 'Export...', 'Tag', CFG.CFG_MTAGS{1}{3}, 'Callback','');
-    uimenu(hEx, 'Label', 'cfg_datatool saccades', 'Tag', CFG.CFG_MTAGS{1}{4}, 'Callback','','Enable',eFlag);
-    uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','','Enable',eFlag);
-    uimenu(hEx, 'Label', 'All saccades', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','','Enable',eFlag);
-    uimenu(hEx, 'Label', 'Auto-saccade parameters', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','','Enable',eFlag);
-    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback','cfgParams(''save'')','Enable',eFlag);
-    uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{9}, 'Callback','cfgParams(''load'')');
-    uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{10}, 'Callback',@closeFcn);
+    hEx = uimenu(m_file, 'Label', 'Export...', 'Tag', CFG.CFG_MTAGS{1}{3});
+    uimenu(hEx, 'Label', 'cfg_datatool saccades', 'Tag', CFG.CFG_MTAGS{1}{4}, 'Callback','cfgParams(''export'',1);','Enable',eFlag);
+%     uimenu(hEx, 'Label', 'Original saccades', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','cfgParams(''export'',2);','Enable',eFlag);
+%     uimenu(hEx, 'Label', 'All saccades', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','cfgParams(''export'',3);','Enable',eFlag);
+    uimenu(hEx, 'Label', 'Open export folder', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{5}, 'Callback','cfgParams(''export'',2);','Enable',eFlag);
+    uimenu(m_file, 'Label', 'Save cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{6}, 'Callback','cfgParams(''save'');','Enable',eFlag);
+    uimenu(m_file, 'Label', 'Load cfg_datatool workspace', 'Tag', CFG.CFG_MTAGS{1}{7}, 'Callback','cfgParams(''load'');');
+    uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback',@closeFcn);
     
     m_edit = uimenu(cfgWinHdl, 'Label', 'Edit', 'Tag', CFG.CFG_MTAGS{2}{1});
     uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback','','Enable',eFlag);
@@ -184,10 +184,10 @@ else
     
     % 140304--Moving parts are:
     set(findobj('Tag', CFG.CFG_MTAGS{1}{4}),'Enable',eFlag); % Export cfg_datatool saccades
-    set(findobj('Tag', CFG.CFG_MTAGS{1}{5}),'Enable',eFlag); % Export Original saccades
-    set(findobj('Tag', CFG.CFG_MTAGS{1}{6}),'Enable',eFlag); % Export All saccades
-    set(findobj('Tag', CFG.CFG_MTAGS{1}{7}),'Enable',eFlag); % Export Auto-saccade parameters
-    set(findobj('Tag', CFG.CFG_MTAGS{1}{8}),'Enable',eFlag); % Save cfg_datatool workspace
+%     set(findobj('Tag', CFG.CFG_MTAGS{1}{5}),'Enable',eFlag); % Export Original saccades
+%     set(findobj('Tag', CFG.CFG_MTAGS{1}{6}),'Enable',eFlag); % Export All saccades
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{5}),'Enable',eFlag); % Open export folder
+    set(findobj('Tag', CFG.CFG_MTAGS{1}{6}),'Enable',eFlag); % Save cfg_datatool workspace
     set(findobj('Tag', CFG.CFG_MTAGS{2}{2}),'Enable',eFlag); % Edit Parameters
     set(findobj('Tag', CFG.CFG_MTAGS{3}{2}),'Enable',eFlag); % Saccade Select
     set(findobj('Tag', CFG.CFG_MTAGS{3}{3}),'Enable',eFlag); % Saccade Add/Modify

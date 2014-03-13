@@ -157,6 +157,9 @@ attachCmpMvFnc = @applyCmpMvFnc;
     end
 
     function onConfirm(obj,evt) % When confirm button is pressed
+        % Prevent multiple clicking
+        confirmBtn.setEnabled(false);
+        cancelBtn.setEnabled(false);
         
         cfgIlabJavaInterface('calc'); % Pass current values for calculation
         cfgIlabJavaInterface('setsacc'); % Pass calculated values to data tool
@@ -165,9 +168,15 @@ attachCmpMvFnc = @applyCmpMvFnc;
     end
 
     function onClose(obj,evt) % When cancel button on frame is pressed
+        % Prevent multiple clicking
+        cancelBtn.setEnabled(false);
+        if exist('confirmBtn','var')
+            confirmBtn.setEnabled(false);
+        end
+        
         cfgUISecure('statecleanup'); % Clean up UI functions based on state
-%         frame.setVisible(0);
-%         frame.dispose();
+        %         frame.setVisible(0);
+        %         frame.dispose();
     end
 
 end

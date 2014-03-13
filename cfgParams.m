@@ -22,8 +22,9 @@ if strcmpi(action, 'init')
     p = mfilename('fullpath');
     p = fileparts(p);
     CFG.usrDir = [p filesep 'usr'];
+    CFG.expDir = [p filesep 'export'];
     
-    ILAB = ilabGetILAB;
+    ILAB = CFG.ILAB;
     
     % Usage state for title bar
     CFG.base = 'cfg_datatool';
@@ -36,7 +37,7 @@ if strcmpi(action, 'init')
         'CFGWIN_INITTXT','CFGWIN_FINTXT',... % 10-11 (Table Text)
         'CFGWIN_INITTBL','CFGWIN_FINTBL'}; % 12-13 (Tables)
     CFG.CFG_MTAGS = cell([1 6]);
-    CFG.CFG_MTAGS{1} = {'CFGMENU_FILE', 'CFGMENU_IMPORT', 'CFGMENU_EXPORTLABEL', 'CFGMENU_EXCFG', 'CFGMENU_EXORIG', 'CFGMENU_EXALL', 'CFGMENU_EXAUTOPARAM', 'CFGMENU_SAVE', 'CFGMENU_LOAD', 'CFGMENU_EXIT'}; % 1, 1-10
+    CFG.CFG_MTAGS{1} = {'CFGMENU_FILE', 'CFGMENU_IMPORT', 'CFGMENU_EXPORTLABEL', 'CFGMENU_EXCFG', 'CFGMENU_OPENEX', 'CFGMENU_SAVE', 'CFGMENU_LOAD', 'CFGMENU_EXIT'}; % 1, 1-8
     CFG.CFG_MTAGS{2} = {'CFGMENU_EDIT', 'CFGMENU_EDITPARAMS'}; % 2, 1-2
     CFG.CFG_MTAGS{3} = {'CFGMENU_SACC', 'CFGMENU_SELECTSACC', 'CFGMENU_ADDMODSACC', 'CFGMENU_CLEARSACC'}; % 3, 1-4
     CFG.CFG_MTAGS{4} = {'CFGMENU_PLOT', 'CFGMENU_PLOTALL'}; % 4, 1-2
@@ -98,11 +99,13 @@ elseif strcmpi(action, 'load')
         return;
     end
     
+    % Switch directory, select, and switch back
     currentDir = pwd;
     cd(CFG.usrDir)
     [f,p] = uigetfile('*.mat');
     cd(currentDir);
         
+    % If cancelled
     if isequal(f,0) || isequal(p,0)
         if CFG.debug
             fprintf('cfgParams (load): Action ''uigetfile'' cancelled.\n');
@@ -115,7 +118,7 @@ elseif strcmpi(action, 'load')
     end
     loadedCFG = load([p f]);
     
-    ILAB = ilabGetILAB; % Keep as ilabGetILAB, to pull appropriate session data from ILAB
+    ILAB = ilabGetILAB; % Keep accessor function, to pull appropriate session data from ILAB
     
     if CFG.debug
         fprintf('cfgParams (load): Current ILAB subject identifier %s.\n',ILAB.subject);
@@ -151,8 +154,19 @@ elseif strcmpi(action, 'save')
     
     % Define a session identifier if it does not exist
     if ~isfield(CFG,'saveFile')
-        matname = [CFG.subject '_' datestr(now,30)];
-        CFG.saveFile = matname;
+        prompt={'Enter a new name for you save file (avoid spaces):'};
+        name='Rename save file';
+        numlines=1;
+        defaultanswer={[CFG.subject '_' datestr(now,30)]};
+        
+        answer=inputdlg(prompt,name,numlines,defaultanswer);
+        
+        if isempty(answer)
+            return;
+        else
+            CFG.saveFile = answer{1};
+            matname = CFG.saveFile;
+        end
     else % Prompt for overwrite
         saveResponse = questdlg(sprintf('Overwrite file: %s.mat?',CFG.saveFile), ...
             'Close cfg_datatool', ...
@@ -201,14 +215,14 @@ elseif strcmpi(action, 'save')
     end   
     
     % Swapping out CFG for temp
-    CFGold = CFG;
+    CFGcurrent = CFG;
     CFG = temp;
     
     % Saving all CFG global parameters
     save([CFG.usrDir filesep matname],'CFG');
     
     % Resetting CFG
-    CFG = CFGold;
+    CFG = CFGcurrent;
     
     msgbox(sprintf('Saving file...\n\n%s\n\nto directory\n\n%s.',[matname '.mat'],CFG.usrDir),'cfg_datatool: Save','modal');
     
@@ -313,6 +327,100 @@ elseif strcmpi(action, 'import')
         throw(ME);
     end
     
+elseif strcmpi(action, 'export')
+    
+    switch varargin{1}
+        case 1
+            if CFG.debug
+                fprintf('cfgParams (export): Exporting current CFG saccade data.\n');
+            end
+            
+            % Prompt to specify output directory name
+            prompt={'Specify export folder directory (avoid spaces):'};
+            name='Name output directory';
+            numlines=1;
+            defaultanswer={[CFG.subject '_' datestr(now,30)]};
+            
+            answer=inputdlg(prompt,name,numlines,defaultanswer);
+            
+            % Check for cancel
+            if isempty(answer)
+                if CFG.debug
+                    fprintf('cfgParams (export): User cancelled.\n');
+                end
+                return;
+            else 
+                outDir = answer{1};
+                
+                if CFG.debug
+                    fprintf('cfgParams (export): Directory specified as -- %s.\n',outDir);
+                end
+                
+                % Check if directory exists
+                [~,d] = system(['dir /b/ad ' CFG.expDir]);
+                d = regexp(d(1:end-1),'\n','split');
+                if any(strcmp(outDir,d))
+                    overWriteResponse = questdlg(sprintf('''%s'' already exists.  Would you like to overwrite?',outDir), ...
+                        'Overwrite directory', ...
+                        'Yes','No','No');
+                    
+                    % Remove directory if user clicks "Yes"
+                    if strcmpi(overWriteResponse,'No') || isempty(overWriteResponse)
+                        if CFG.debug
+                            fprintf('cfgParams (export): User cancelled.\n');
+                        end
+                        return;
+                    elseif strcmpi(overWriteResponse,'Yes')
+                        if CFG.debug
+                            fprintf('cfgParams (export): Attempting to remove directory -- %s.\n',outDir);
+                        end
+                        rmdir([CFG.expDir filesep outDir],'s'); 
+                    end
+                end
+            end
+            
+            if CFG.debug
+                fprintf('cfgParams (export): Creating directory -- %s.\n',[CFG.expDir filesep outDir]);
+            end
+            
+            mkdir([CFG.expDir filesep outDir]);
+            
+            if CFG.debug
+                fprintf('cfgParams (export): Created directory -- %s.\n',[CFG.expDir filesep outDir]);
+                fprintf('cfgParams (export): Formatting saccade data.\n');
+                
+            end
+            
+            % Format cells for excel output, Adding 'Trial' and trial
+            % numbers.
+            out1 = [['Trial',CFG.cfgHeaders];[num2cell([1:CFG.trials]'),CFG.initial.table]];
+            out2 = [['Trial',CFG.cfgHeaders];[num2cell([1:CFG.trials]'),CFG.final.table]];
+            
+            if CFG.debug
+                fprintf('cfgParams (export): Writing initial.xlsx and final.xlsx files to directory.\n');
+            end
+            
+            xlswrite([CFG.expDir filesep outDir filesep 'initial.xlsx'],out1);
+            xlswrite([CFG.expDir filesep outDir filesep 'final.xlsx'],out2);
+            
+            msgbox(sprintf('Files initial.xlsx and final.xslx written to directory:\n%s.',[CFG.expDir filesep outDir]),'cfg_datatool: Export','modal');
+%         case 2
+%             if CFG.debug
+%                 fprintf('cfgParams (export): Exporting original saccade data table.\n');
+%             end
+%             
+% %             ilabSaveTblAsExcelCB
+%         case 3
+%             if CFG.debug
+%                 fprintf('cfgParams (export): Exporting original saccade data table and current CFG saccade data.\n');
+%             end
+        case 2
+            if CFG.debug
+                fprintf('cfgParams (export): Request to open export directory.\n');
+            end
+            winopen(CFG.expDir);
+    end
+    
 elseif strcmpi(action, 'get')
     
     if CFG.debug
@@ -400,7 +508,7 @@ end
         if CFG.debug
             fprintf('cfgParams(cfgExpCalc): Nested function called for additional saccade calculations.\n');
         end
-        PP = ilabGetPlotParms;
+        PP = CFG.PP;
         % Shift relative to start of PP.index (because that's how PP.data is structured)
         % Shift start index back 1, because slider index already accounts
         % for first index value
@@ -412,7 +520,7 @@ end
         vx = [0; diff(trialx)];
         vy = [0; diff(trialy)];
         
-        acqIntvl_ms = ilabGetAcqIntvl;
+        acqIntvl_ms = CFG.acqIntvl;
         acqIntvl_sec = acqIntvl_ms/1000;
         [pixPerDegH, pixPerDegV] = ilabPixelsPerDegree; % pix/deg
         
@@ -423,10 +531,10 @@ end
         iPeak = (iPeak-1) + sIndex; % Index (relative to trial) of peak
         
         t0 = CFG.(lower(saccIF)).t0(nTrial); % Start of event (ms)
-        tIndex = t0/ilabGetAcqIntvl; % Start of event (index)
+        tIndex = t0/CFG.acqIntvl; % Start of event (index)
         
-        sRT = (sIndex - tIndex)*ilabGetAcqIntvl; % Saccadic reaction time (ms)
-        ttP = (iPeak - tIndex)*ilabGetAcqIntvl; % Peak latency from target (ms)
+        sRT = (sIndex - tIndex)*CFG.acqIntvl; % Saccadic reaction time (ms)
+        ttP = (iPeak - tIndex)*CFG.acqIntvl; % Peak latency from target (ms)
         dtT = abs(trialx(end) - CFG.trialXPosVector(nTrial)); % Absolute distance from target (pix)        
     end
 
