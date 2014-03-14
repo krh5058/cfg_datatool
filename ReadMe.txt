@@ -20,6 +20,8 @@ Implementation Considerations:
 	- Positioned total height of window to be 85% total screen height
 - Use of features
 	- Pupil, for quality checking purposes
+		- Pupil checkbox changes XY plot axes and moves X and Y plotting to one axis, pupil to other (previously Y).
+		- However, UI is not stalled when errors occur.  Will need to debug.
 - Need platform specs from client
 	- version -java
 		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode

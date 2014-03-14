@@ -21,6 +21,8 @@ switch lower(action)
         mainUIOff;
     case 'mainuion'
         mainUIOn;
+    case 'updateilabui'
+        updateIlabUI;
     case 'forceslselect1'
         forceSLSelect1;
     case 'enableslselect'
@@ -126,6 +128,18 @@ switch lower(action)
                     TBL_TAG = 'SaccadeTable';
                     jFrameFig = findobj('Tag',TBL_TAG);
         
+                case 'plot'
+                    
+                    cfgUISecure('anyselect'); % Release row select
+                    cfgUISecure('clearuitableud'); % Keep table UserData clear
+                    cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
+%                     cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
+                    cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
+                    cfgUISecure('clearsaccaction'); % Free UI from state restrictions
+                    cfgUISecure('mainUIOn'); % Re-enable main UI functions
+                    
+                    jFrameFig = findobj('Tag',CFG.CFG_TAGS{2});
+                    
                 otherwise
                     if CFG.debug
                         fprintf(['cfgUISecure (statecleanup): Unknown data tool state -- %s\n'], state);
@@ -243,6 +257,44 @@ end
         
         hc = findobj(hf, 'Tag', 'ShowVelPlotBox');
         set(hc, 'Enable', 'on');
+    end
+
+    function updateIlabUI
+        % Expecting only one selected row at a time.
+        
+        % Determine selected table and row
+        uiHIndices = 3:4;
+        tbl = ~cellfun(@isempty,get(CFG.handles.hLui(uiHIndices),'UserData'));
+        tableTag = get(CFG.handles.hLui(uiHIndices(tbl)),'Tag');
+        selRow = get(CFG.handles.hLui(uiHIndices(tbl)),'UserData');
+        
+        if CFG.debug
+            fprintf(['cfgUISecure (updateIlabUI): Selected table -- %s\n'],tableTag);
+            fprintf(['cfgUISecure (updateIlabUI): Selected row -- %i\n'],selRow);
+        end
+        
+        if CFG.debug
+            fprintf(['cfgUISecure (updateIlabUI): Setting UI trial-related items to -- %i\n'],selRow);
+        end
+        
+        hf = ilabGetMainWinHdl;
+        
+        if size(selRow,1) == 1 % Ensure only one row
+            hc = findobj(hf, 'Tag', 'TrialCurrent');
+            set(hc, 'String', num2str(selRow));
+            
+            hc = findobj(hf, 'Tag', 'TrialSlider');
+            set(hc, 'Value', selRow);
+        end
+        
+        hc = findobj(hf, 'Tag', 'TrialList');
+        set(hc, 'String', num2str(selRow));
+        
+        % Set plot parms trial to selected trial
+        PP = CFG.PP;
+        PP.trialList = selRow;
+        ilabSetPlotParms(PP);
+        ilabDrawCoordPlot;
     end
 
     function forceSLSelect1

@@ -59,7 +59,7 @@ if isempty(cfgWinHdl)
     uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','','Enable',eFlag);
     
     m_plot = uimenu(cfgWinHdl, 'Label', 'Plot', 'Tag', CFG.CFG_MTAGS{4}{1});
-    uimenu(m_plot, 'Label', 'Plot all', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','','Enable',eFlag);
+    uimenu(m_plot, 'Label', 'Plot CFG', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','cfgSaccCB(''plot'');','Enable',eFlag);
     
     m_analysis = uimenu(cfgWinHdl, 'Label', 'Analysis', 'Tag', CFG.CFG_MTAGS{5}{1});
     
