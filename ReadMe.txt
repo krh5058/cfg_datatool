@@ -25,7 +25,14 @@ Implementation Considerations:
 		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode
 	- JIDE compatibility
 - Assumed Excel compatibility
+- Hammer or local?
+	- Exceed OnDemand
+		- Hammer Seamless, Terminal.xs
+			- Need to adjust configuration
+			- Sizing and positioning issues causes ILAB UI to not function appropriately
 
+		- Desktop mode
+			- Spans across monitors
 Known bugs:
 - Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
 - Slider isn't 100% lined up with plot, due to track buffer.

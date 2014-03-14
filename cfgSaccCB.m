@@ -95,7 +95,15 @@ switch action
         
         if CFG.debug
             fprintf('cfgSaccCB (clear): Clear saccade request.\n');
-        end      
+        end    
+        
+    case 'plot'
+        
+        if CFG.debug
+            fprintf('cfgSaccCB (plot): CFG saccade plotting request.\n');
+        end
+        
+        
         
     otherwise
         if CFG.debug
@@ -128,7 +136,7 @@ end
                 'Saccade specification', ...
                 'Initial','Final','Cancel','Initial');
             
-            if strcmpi(saccif,'Cancel')
+            if strcmpi(saccif,'Cancel') || isempty(saccif)
                 return;
             end
             

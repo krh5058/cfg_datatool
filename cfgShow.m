@@ -25,7 +25,9 @@ if isempty(cfgWinHdl)
     %     request as long as their visibility remains 'on'
     
     % Set figure size and position
-    scrsz = get(0,'ScreenSize');
+    monitorPos = get(0,'MonitorPositions');
+    scrsz = monitorPos(1,:); % First monitor
+%     scrsz = get(0,'ScreenSize');
     S = get(gcf, 'Position'); % Position of default figure
     S(2) =   0.15*scrsz(4);      % bottom
     %     S(3) = 1.4*S(3);  % width

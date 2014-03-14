@@ -172,6 +172,10 @@ elseif strcmpi(action, 'save')
             'Close cfg_datatool', ...
             'Overwrite','Rename','Cancel','Cancel');
         
+        if isempty(saveResponse)
+            return;
+        end
+        
         switch saveResponse
             case 'Overwrite'
                 matname = CFG.saveFile;
@@ -238,18 +242,38 @@ elseif strcmpi(action, 'import')
         fprintf('cfgParams (import): Importing CFG experimental data.\n');
     end
     
-    [f,p] = uigetfile('*.xlsx');
-    
-    if isequal(f,0) || isequal(p,0)
-        if CFG.debug
-            fprintf('cfgParams (import): Action ''uigetfile'' cancelled.\n');
-        end
-        return;
-    end
-    
     try
-        [num,txt] = xlsread([p f]);
-        
+        if ispc
+            [f,p] = uigetfile('*.xlsx');
+            
+            if isequal(f,0) || isequal(p,0)
+                if CFG.debug
+                    fprintf('cfgParams (import): Action ''uigetfile'' cancelled.\n');
+                end
+                return;
+            end
+            [num,txt] = xlsread([p f]);
+        elseif isunix % Can use the below for PC also, but file extension must be .xls
+            [f,p] = uigetfile('*.xls');
+            
+            if isequal(f,0) || isequal(p,0)
+                if CFG.debug
+                    fprintf('cfgParams (import): Action ''uigetfile'' cancelled.\n');
+                end
+                return;
+            end
+            dat = importdata([p f]);
+            sheettxt = fieldnames(dat.textdata);
+            sheetdata = fieldnames(dat.data);
+            if length(sheettxt) > 1 || length(sheetdata) > 1
+                warning('cfg_datatool:importDataError','Too many detected sheets.  Will only use first sheet.');                
+            end
+            num = dat.data.(sheetdata{1});
+            txt = dat.textdata.(sheettxt{1});
+        else
+            error('cfg_datatool:platform','Incompatible platform.');
+        end
+            
         if CFG.debug
             fprintf('cfgParams (import): File read complete... %s.\n',[p f]);
         end
@@ -397,13 +421,20 @@ elseif strcmpi(action, 'export')
             out2 = [['Trial',CFG.cfgHeaders];[num2cell([1:CFG.trials]'),CFG.final.table]];
             
             if CFG.debug
-                fprintf('cfgParams (export): Writing initial.xlsx and final.xlsx files to directory.\n');
+                fprintf('cfgParams (export): Writing initial and final files to directory.\n');
             end
             
-            xlswrite([CFG.expDir filesep outDir filesep 'initial.xlsx'],out1);
-            xlswrite([CFG.expDir filesep outDir filesep 'final.xlsx'],out2);
-            
-            msgbox(sprintf('Files initial.xlsx and final.xslx written to directory:\n%s.',[CFG.expDir filesep outDir]),'cfg_datatool: Export','modal');
+            if ispc
+                xlswrite([CFG.expDir filesep outDir filesep 'initial.xlsx'],out1);
+                xlswrite([CFG.expDir filesep outDir filesep 'final.xlsx'],out2);
+                msgbox(sprintf('Files initial.xlsx and final.xslx written to directory:\n%s.',[CFG.expDir filesep outDir]),'cfg_datatool: Export','modal');
+            elseif isunix
+                cell2csv([CFG.expDir filesep outDir filesep 'initial.csv'],out1);
+                cell2csv([CFG.expDir filesep outDir filesep 'final.csv'],out2);
+                msgbox(sprintf('Files initial.csv and final.csv written to directory:\n%s.',[CFG.expDir filesep outDir]),'cfg_datatool: Export','modal');
+            else
+                error('cfg_datatool:platform','Incompatible platform.');
+            end
 %         case 2
 %             if CFG.debug
 %                 fprintf('cfgParams (export): Exporting original saccade data table.\n');
@@ -418,7 +449,13 @@ elseif strcmpi(action, 'export')
             if CFG.debug
                 fprintf('cfgParams (export): Request to open export directory.\n');
             end
-            winopen(CFG.expDir);
+            if ispc
+                winopen(CFG.expDir);
+            elseif isunix
+                unix(['nautilus ' CFG.expDir]);
+            else
+                error('cfg_datatool:platform','Incompatible platform.');
+            end
     end
     
 elseif strcmpi(action, 'get')
