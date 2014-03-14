@@ -27,6 +27,8 @@ else
             CFG.stateTitle = [CFG.base ': Select'];
         case 'addmod'
             CFG.stateTitle = [CFG.base ': Add/Modify'];
+        case 'plot'
+            CFG.stateTitle = [CFG.base ': Plot'];
         otherwise
             if CFG.debug
                 fprintf('cfgSaccCB: Unable to set title.  Unknown action argument.\n');
@@ -103,7 +105,25 @@ switch action
             fprintf('cfgSaccCB (plot): CFG saccade plotting request.\n');
         end
         
+        cfgUISecure('rowselect');
+        cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+        cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
+        %         cfgUISecure('forceSLSelect1'); % Force saccade list box value to 1
+        cfgUISecure('mainUIOff');
+                                
+        [CFGDT.confirmJFrame,CFGDT.confirmTxtFnc,cmpMvFnc] = cfgConfirmJFrame(false);
+        cmpMvFnc(findobj('Tag',CFG.CFG_TAGS{2}), CFGDT.confirmJFrame);
+                
+        % Set new callbacks
+        jscrollInit = findjobj(CFG.handles.hLui(3));
+        jtableInit = jscrollInit.getViewport.getView;
+        hJTableInit = handle(jtableInit, 'CallbackProperties');
+        set(hJTableInit, 'MouseReleasedCallback', {@addSnglClickCB, CFG.handles.hLui(3)});
         
+        jscrollFin = findjobj(CFG.handles.hLui(4));
+        jtableFin = jscrollFin.getViewport.getView;
+        hJTableFin = handle(jtableFin, 'CallbackProperties');
+        set(hJTableFin, 'MouseReleasedCallback', {@addSnglClickCB, CFG.handles.hLui(4)});
         
     otherwise
         if CFG.debug
@@ -240,26 +260,7 @@ end
                 
                 % Set main window UI controls
                 cfgUISecure('mainUIOff');
-                
-                if CFG.debug
-                    fprintf(['cfgSaccCB (addDblClickCB):: Setting UI trial-related items to -- %i\n'],selRow);
-                end
-                
-                hf = ilabGetMainWinHdl;
-                hc = findobj(hf, 'Tag', 'TrialCurrent');
-                set(hc, 'String', num2str(selRow));
-                
-                hc = findobj(hf, 'Tag', 'TrialList');
-                set(hc, 'String', num2str(selRow));
-                
-                hc = findobj(hf, 'Tag', 'TrialSlider');
-                set(hc, 'Value', selRow);
-                
-                % Set plot parms trial to selected trial
-                PP = CFG.PP;
-                PP.trialList = selRow;
-                ilabSetPlotParms(PP);
-                ilabDrawCoordPlot;
+                cfgUISecure('updateilabui'); % Update ILAB UI, Pass only one selected row at a time
                 
                 % Handle data tool state
                 request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
@@ -276,5 +277,55 @@ end
                 end
             end
         end
+    end
+
+    function addSnglClickCB(src,evt,currTbl)
+        selRow = double(src.getSelectedRows + 1); % Returns 0-indexed int32
+        selRow = selRow(1); % First selection only
+        set(currTbl,'UserData',selRow); % For cfgIlabJavaInterface.m, to pull row and table with row (not empty, and cleared after to determine this).  
+        cfgUISecure('updateilabui'); % Update ILAB UI, Pass only one selected row at a time
+        cfgUISecure('clearuitableud'); % Keep table UserData clear
+        
+        %         switch currTbl
+        %             case CFG.CFG_TAGS{12}
+        %                 saccif = 'Initial';
+        %             case CFG.CFG_TAGS{13}
+        %                 saccif = 'Final';
+        %             otherwise
+        %                 if CFG.debug
+        %                     fprintf(['cfgSaccCB (addSnglClickCB): Undefined table tag.\n']);
+        %                 end
+        %         end
+        
+        % Initial/final saccade windows
+        iWin = [CFG.initial.list(selRow,3) CFG.initial.list(selRow,4)];
+        fWin = [CFG.final.list(selRow,3) CFG.final.list(selRow,4)];
+        
+        % Delay and feedback event timestamps
+        it0 = CFG.initial.t0(selRow);
+        if0 = CFG.final.t0(selRow);
+        
+        if CFG.debug
+            %             fprintf('cfgSaccCB (addSnglClickCB): Initial window, %.\n');
+            %             fprintf('cfgSaccCB (addSnglClickCB): Final window, %.\n');
+            %             fprintf('cfgSaccCB (addSnglClickCB): Delay event, %.\n');
+            %             fprintf('cfgSaccCB (addSnglClickCB): Feedback event, %.\n');
+            disp(iWin);
+            disp(fWin);
+            disp(it0);
+            disp(if0);
+        end
+        
+        % Report to window, formatted
+        %         wndwTxtVals = {'NaN', 'NaN'}; % Values?
+        %         setappdata(CFGDT.confirmJFrame,'WindowTxtVals', wndwTxtVals);
+        
+        % Format index appropriately, with acqIntvl or absolute for PP
+        % plotting
+        
+        % Trick plot
+        
+        % Edit 'Tag' 'saccades' for finer tuning plotting functions
+
     end
 end
