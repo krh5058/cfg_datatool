@@ -86,8 +86,10 @@ attachCmpMvFnc = @applyCmpMvFnc;
         % Set text
         startTxtHead = 'Start (ms): ';
         endTxtHead = 'End (ms): ';
-        sL.setText([startTxtHead vals{1}]);
-        eL.setText([endTxtHead vals{2}]);
+        javaMethodEDT('setText',sL,[startTxtHead vals{1}]);
+        javaMethodEDT('setText',eL,[endTxtHead vals{2}]);
+%         sL.setText([startTxtHead vals{1}]);
+%         eL.setText([endTxtHead vals{2}]);
         
         drawnow;
     end

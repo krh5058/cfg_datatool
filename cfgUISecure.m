@@ -59,11 +59,13 @@ switch lower(action)
         jtableInit = jscrollInit.getViewport.getView;
         hJTableInit = handle(jtableInit, 'CallbackProperties');
         set(hJTableInit, 'MouseReleasedCallback', []);
+        set(hJTableInit, 'MousePressedCallback', []);
         
         jscrollFin = findjobj(CFG.handles.hLui(4));
         jtableFin = jscrollFin.getViewport.getView;
         hJTableFin = handle(jtableFin, 'CallbackProperties');
         set(hJTableFin, 'MouseReleasedCallback', []);
+        set(hJTableFin, 'MousePressedCallback', []);
     case 'clearuitableud'
         if CFG.debug
             fprintf('cfgUISecure: Clearing UserData from UI tables.\n');
@@ -109,6 +111,7 @@ switch lower(action)
 %                         jFrameFig = NaN;
 %                     else
                         % Clean-up
+                        cfgUISecure('anyselect'); % Release row select
                         cfgUISecure('enableSLSelect'); % Re-enable saccade listbox
                         cfgUISecure('apReturn'); % Assuming apForceOff prior to this function call
                         cfgUISecure('clearsaccaction'); % Free UI from state restrictions
@@ -127,7 +130,16 @@ switch lower(action)
                     
                     TBL_TAG = 'SaccadeTable';
                     jFrameFig = findobj('Tag',TBL_TAG);
-        
+                    
+                case 'clear'
+                        % Clean-up
+                        cfgUISecure('anyselect'); % Release row select
+                        cfgUISecure('clearuitablecb'); % Clear even on JFrame "Cancel"
+                        cfgUISecure('clearuitableud'); % Keep table UserData clear
+                        cfgUISecure('clearsaccaction'); % Free UI from state restrictions
+                        
+                        jFrameFig = findobj('Tag',CFG.CFG_TAGS{2});
+                        
                 case 'plot'
                     
                     cfgUISecure('anyselect'); % Release row select
@@ -291,7 +303,7 @@ end
         set(hc, 'String', num2str(selRow));
         
         % Set plot parms trial to selected trial
-        PP = CFG.PP;
+        PP = ilabGetPlotParms; % Use accessor method to update pupil
         PP.trialList = selRow;
         ilabSetPlotParms(PP);
         ilabDrawCoordPlot;

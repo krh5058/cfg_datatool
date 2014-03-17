@@ -515,7 +515,16 @@ elseif strcmpi(action, 'setsacc')
     CFG.(lower(varargin{1})).table{varargin{2},11} = dtT; % Distance from target (pix)
     
     %     CFG.(lower(varargin{1})).table{varargin{2},10} = CFG.(lower(varargin{1})).latency(varargin{2}); % Latency, Deprecated
-              
+           
+elseif strcmpi(action,'clearsacc')
+    if CFG.debug
+        fprintf('cfgParams (clearsacc): CFG saccade value clear request.\n');
+        fprintf('cfgParams (clearsacc): %s saccade, at index %i , cleared.\n', varargin{1},varargin{2});
+    end
+    
+    CFG.(lower(varargin{1})).list(varargin{2},:) = deal(NaN);
+    CFG.(lower(varargin{1})).table(varargin{2},:) = CFG.cfgInitEmpty;
+    
 elseif strcmpi(action,'reset')
     if CFG.debug
         fprintf('cfgParams (reset): CFG parameter reset requested.\n');

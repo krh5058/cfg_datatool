@@ -51,12 +51,12 @@ if isempty(cfgWinHdl)
     uimenu(m_file, 'Label', 'Exit', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{1}{8}, 'Callback',@closeFcn);
     
     m_edit = uimenu(cfgWinHdl, 'Label', 'Edit', 'Tag', CFG.CFG_MTAGS{2}{1});
-    uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback','','Enable',eFlag);
+    uimenu(m_edit, 'Label', 'Parameters', 'Tag', CFG.CFG_MTAGS{2}{2},'Callback',@showSaccParmUIDisabled,'Enable',eFlag);
     
     m_sacc = uimenu(cfgWinHdl, 'Label', 'Saccade', 'Tag', CFG.CFG_MTAGS{3}{1});
     uimenu(m_sacc, 'Label', 'Select', 'Tag', CFG.CFG_MTAGS{3}{2}, 'Callback','cfgSaccCB(''select'');','Enable',eFlag);
     uimenu(m_sacc, 'Label', 'Add/Modify', 'Tag', CFG.CFG_MTAGS{3}{3},'Callback','cfgSaccCB(''addmod'');','Enable',eFlag);
-    uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','','Enable',eFlag);
+    uimenu(m_sacc, 'Label', 'Clear', 'Tag', CFG.CFG_MTAGS{3}{4},'Callback','cfgSaccCB(''clear'');','Enable',eFlag);
     
     m_plot = uimenu(cfgWinHdl, 'Label', 'Plot', 'Tag', CFG.CFG_MTAGS{4}{1});
     uimenu(m_plot, 'Label', 'Plot CFG', 'Tag', CFG.CFG_MTAGS{4}{2}, 'Callback','cfgSaccCB(''plot'');','Enable',eFlag);
@@ -230,6 +230,20 @@ figure(cfgWinHdl);
         %         jscroll = findjobj(src);
         %         jtable = jscroll.getViewport.getView;
         %         view = get(jscroll.getComponent(0).getView.getModel);
+    end
+
+    function showSaccParmUIDisabled(src,evt)
+        ilabCalcSaccadeCB('init');
+        spuiHandle = findobj('Tag','SACCADE_UI');
+        
+        % Disable all children except cancel
+        spuiChildren = get(spuiHandle,'Children');
+        for spuiIter = 1:length(spuiChildren)
+            if strcmp(get(spuiChildren(spuiIter),'Callback'),'ilabCalcSaccadeCB(''Cancel'')')
+            else
+                set(spuiChildren(spuiIter),'Enable','off')
+            end
+        end 
     end
 
     function closeFcn(src,evt)
