@@ -18,10 +18,6 @@ Implementation Considerations:
 - Developed on 1680x1050 resolution screen
 	- Positioned bottom of window at 15% total screen height from bottom of screen
 	- Positioned total height of window to be 85% total screen height
-- Use of features
-	- Pupil, for quality checking purposes
-		- Pupil checkbox changes XY plot axes and moves X and Y plotting to one axis, pupil to other (previously Y).
-		- However, UI is not stalled when errors occur.  Will need to debug.
 - Need platform specs from client
 	- version -java
 		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode
@@ -37,8 +33,19 @@ Implementation Considerations:
 			- Terminal
 			- Spans across monitors
 	- module load matlab/R2011b
+
 Known bugs:
-- Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
-- Slider isn't 100% lined up with plot, due to track buffer.
+
+ILAB-related
 - Closing either "cfg_datatool" or "Saccade Results" windows typically results in loss of underlying data models or UI states.
-- cfg_datatool tables sometimes appear glitchy
+- Closing ILAB main window with the "X" button is not handled appropriately, which may result in unintentional toolbox behavior.
+- Instituting another "Saccade Results" (and setting an additional set of saccade parameters) results in loss of underlying data models or UI states.
+
+UI Components
+- cfg_datatool tables sometimes appear glitchy or update slow
+- Plotting may glitch axis drawing if single clicks occur too rapidly
+- Slider isn't 100% lined up with plot, due to track buffer
+- Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
+
+Toolbox environment
+- Relocation of toolbox will cause pathing issues in previously saved files
