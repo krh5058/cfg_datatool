@@ -381,8 +381,10 @@ elseif strcmpi(action, 'export')
                 end
                 
                 % Check if directory exists
-                [~,d] = system(['dir /b/ad ' CFG.expDir]);
-                d = regexp(d(1:end-1),'\n','split');
+                % [~,d] = system(['dir /b/ad ' CFG.expDir]);
+                % d = regexp(d(1:end-1),'\n','split');
+                d = dir(CFG.expDir);
+                d = {d([d.isdir]).name};
                 if any(strcmp(outDir,d))
                     overWriteResponse = questdlg(sprintf('''%s'' already exists.  Would you like to overwrite?',outDir), ...
                         'Overwrite directory', ...
