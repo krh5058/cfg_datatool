@@ -1,0 +1,46 @@
+3/18/14
+
+Update for cfg_datatool (3/18/14)
+
+The toolbox is done outside of some minor touches.  Now, I have to implement it on your platform(s).  It seems like the most accessible option is moving it to Hammer.  Another option is obtaining Matlab locally (most convenient for me), but that may be a problem due to licensing issues.  A third option is to use the imaging center’s server (and Matlab license), which I’ve been in talks with our system administrator to implement.
+
+Issues at hand:
+- I have tested the UI again on Hammer.  It seems that whatever problems I was running into during our meeting was due to server-side issues because everything works now.  I have been connecting with Exceed OnDemand.  There are other options, but this one seems to work best with the constraints of the UI and multiple monitors.  
+	1) The link to Exceed OnDemand is here: https://rcc.its.psu.edu/user_guides/remote_display/exceed_on_demand/.  
+	2) To set-up for the purposes of this software, you must use Xconfig: Seamless_Mode.cfg, and Xstart: Gnome_Desktop.xs.  
+	3) In Terminal, run “module load matlab/R2011b” (without quotes)
+	4) Then, run “matlab” (without quotes)
+	5) I have uploaded the current working version of software to my own directory with permissions for anyone’s use: /gpfs/home/krh5058/MATLAB/cfg_datatool
+Please test this when you can, and let me know if you run into any problems.  Usage and testing of the toolbox through these means hasn’t been perfect, but currently appears to be the most convenient method.  (I’ve run into external errors, such as the cluster not providing Matlab enough processing memory for certain actions.)
+- In the near future, I will need access to your lab space on Hammer.  I can place the toolbox and updates there, so you are not hinged on using my home directory space to access the toolbox.  If you confirm, provide me with your Hammer lab space directory, and I will send RCC helpdesk an email request.
+- The next step is determining a consistent process for bug/modification reporting, and a convenient way to deliver software updates.  In the meantime, I'll make updates to Hammer myself.  Whatever means also depends on the method for accessing Matlab and in what server space.  I'll figure this out for our next meeting.
+- Lastly, I need to make a visit to your lab and make sure everything is working and stand in during an actual data analysis session.
+- Attached are templates for trial input data:
+	- WM10027_Nonsmoker1-1_basic_input_template.xls: This is the template that must be used on Hammer (Linux).
+	- WM10027_Nonsmoker1-1_input_template.xlsx: This is the template for PC with a compatible Excel version.
+- Attached are example outputs of an entire data session (initial.csv and final.csv).
+	- Output is CSV because I performed this on Hammer.  Hammer (Linux) does not have Excel, a Microsoft product, so I have modified the toolbox to output CSV.  When using PC, output will be XLSX.
+	- The output consists of an entire data session, using/testing all the implemented functionalities.  I estimate a total amount of time to finish took about 40 minutes-- approximately 1 minute per trial--depending on how methodical you work.  I’ve made note of adjustments to speed up this process.
+	- You can load my workspace instance on Hammer (assuming you get it working).  The session file is called “demo.mat”.
+
+Completed:
+- Plotting
+- Save/Load workspace
+- Clear saccade function
+- Data export
+- Demonstrating overall (near-complete) UI usage in its current state
+
+Primarily Milestones:
+- Examine portability to Hammer/Hoth as primary runtime environment
+- Examine Exceed OnDemand as primary remote display virtualization; document procedure
+- Assuming Hammer, acquire read/write/execute permissions to CFG2 lab space
+- Complete documentation and add to UI “Help”
+- Assess keyboard press for easier cycling during plot (or any other methods)
+- Polish UI for smooth workflow: address known bugs and UI usage efficiency
+- Schedule meeting date to examine usage in your lab space
+
+Secondary Milestones:
+- After settling on runtime environment and remote display, script software update and syncing routines; document update procedure
+- Determine most efficient bug/modification reporting procedure
+- Finalize menu-bar items
+- Debug and quality control
