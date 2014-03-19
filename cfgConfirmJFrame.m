@@ -69,6 +69,7 @@ splitpane.setEnabled(false);
 frame.add(splitpane);
 
 frame.setResizable(0);
+frame.setFocusableWindowState(0);
 frame.setVisible(1);
 
 updateTxtFnc = @updateLabelTxt;

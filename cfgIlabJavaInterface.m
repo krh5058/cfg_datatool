@@ -28,8 +28,6 @@ switch lower(action)
             fprintf(['cfgIlabJavaInterface (setup): Selected row -- %i\n'],slider.selRow);
         end
         
-        cfgUISecure('clearuitableud'); % Keep table UserData clear
-
         % Determine default values
         trackBuffer = 10; % Estimated
         if find(tbl)==1

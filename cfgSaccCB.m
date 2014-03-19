@@ -89,8 +89,8 @@ switch action
         set(hJTableInit, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(3)});
         
         jscrollFin = findjobj(CFG.handles.hLui(4));
-        jtableFin = jscrollFin.getViewport.getView;
-        hJTableFin = handle(jtableFin, 'CallbackProperties');
+        jTableFin = jscrollFin.getViewport.getView;
+        hJTableFin = handle(jTableFin, 'CallbackProperties');
         set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
         
         % User prompt
@@ -102,7 +102,7 @@ switch action
         end    
         
         cfgUISecure('rowselect');
-        cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+        cfgUISecure('clearilabplot'); % Clear current plotting
                 
         [CFGDT.confirmJFrame,CFGDT.confirmTxtFnc,cmpMvFnc] = cfgConfirmJFrame(false);
         cmpMvFnc(findobj('Tag',CFG.CFG_TAGS{2}), CFGDT.confirmJFrame);
@@ -120,8 +120,8 @@ switch action
 %         set(hJTableInit, 'MousePressedCallback', {@addSnglClickCB, CFG.handles.hLui(3)});
         
         jscrollFin = findjobj(CFG.handles.hLui(4));
-        jtableFin = jscrollFin.getViewport.getView;
-        hJTableFin = handle(jtableFin, 'CallbackProperties');
+        jTableFin = jscrollFin.getViewport.getView;
+        hJTableFin = handle(jTableFin, 'CallbackProperties');
         set(hJTableFin, 'MouseReleasedCallback', {@addDblClickCB, CFG.handles.hLui(4)});
 %         set(hJTableFin, 'MousePressedCallback', {@addSnglClickCB, CFG.handles.hLui(4)});
         
@@ -132,7 +132,7 @@ switch action
         end
         
         cfgUISecure('rowselect');
-        cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+        cfgUISecure('clearilabplot'); % Clear current plotting
         cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
         %         cfgUISecure('forceSLSelect1'); % Force saccade list box value to 1
         cfgUISecure('mainUIOff');
@@ -143,14 +143,17 @@ switch action
         % Set new callbacks
         jscrollInit = findjobj(CFG.handles.hLui(3));
         jtableInit = jscrollInit.getViewport.getView;
-        hJTableInit = handle(jtableInit, 'CallbackProperties');
-        set(hJTableInit, 'MouseReleasedCallback', {@addSnglClickCB, CFG.handles.hLui(3)});
+        hJTableInit = handle(javaObjectEDT(jtableInit), 'CallbackProperties');
+        set(hJTableInit, 'MouseReleasedCallback', {@addUITblPlotCB, CFG.handles.hLui(3)});
+        set(CFG.handles.hLui(3), 'KeyPressFcn', {@addUITblPlotCB, CFG.handles.hLui(3)});   
         
         jscrollFin = findjobj(CFG.handles.hLui(4));
-        jtableFin = jscrollFin.getViewport.getView;
-        hJTableFin = handle(jtableFin, 'CallbackProperties');
-        set(hJTableFin, 'MouseReleasedCallback', {@addSnglClickCB, CFG.handles.hLui(4)});
-        
+        jTableFin = jscrollFin.getViewport.getView;
+        hJTableFin = handle(javaObjectEDT(jTableFin), 'CallbackProperties');
+        set(hJTableFin, 'MouseReleasedCallback', {@addUITblPlotCB, CFG.handles.hLui(4)});
+        set(CFG.handles.hLui(4), 'KeyPressFcn', {@addUITblPlotCB, CFG.handles.hLui(4)}); 
+
+        %         set(findobj('Tag',CFG.CFG_TAGS{2}), 'KeyPressFcn', @arrowKeysCB);
     otherwise
         if CFG.debug
             fprintf('cfgSaccCB: Unknown action argument.\n');
@@ -278,8 +281,10 @@ end
 
                 cfgUISecure('clearuitablecb'); % Clear UI table callbacks, removing self as soon as valid selection occurs
                 
-                set(currTbl,'UserData',selRow); % For cfgIlabJavaInterface.m, to pull row and table with row (not empty, and cleared after to determine this).
-                                
+                set(currTbl,'UserData',selRow); % For cfgIlabJvaInterface.m, cfgUISecure('plottoilabmain'), and cfgUISecure('updateIlabUI'), to pull row and table with row (not empty, and cleared after to determine this).
+                cfgUISecure('updateilabui'); % Update ILAB UI, Pass only one selected row at a time
+                cfgUISecure('plottoilabmain'); % Plot with selected row
+                
                 % Handle data tool state
                 request = get(findobj('Tag',CFG.CFG_TAGS{2}),'UserData');
                 
@@ -289,12 +294,13 @@ end
                 
                 switch request
                     case 'addmod'
-                        cfgUISecure('clearilabplot'); % Clear current plotting, also clears saccade listbox selection to null
+                        cfgUISecure('clearilabplot'); % Clear current plotting
                         cfgUISecure('apForceOff'); % Prevent ILAB saccade auto-plotting
                         cfgUISecure('forceSLSelect1'); % Force saccade list box value to 1
+                        
                         % Set main window ui controls
                         cfgUISecure('mainuioff');
-                        cfgUISecure('updateilabui'); % update ilab ui, pass only one selected row at a time
+%                         cfgUISecure('updateilabui'); % update ilab ui, pass only one selected row at a time
                         cfgIlabJavaInterface('setup');
                     case 'clear'
                         % Initial/final switch
@@ -321,8 +327,12 @@ end
                         else
                             cfgParams('clearsacc',saccif,selRow);
                             cfgShow; % Update UI
+                            
+                            % Switch UI, update plot as feedback
+                            cfgUISecure('updateilabui'); % Update ILAB UI, Pass only one selected row at a time
+                            cfgUISecure('plottoilabmain'); % Plot with selected row
                         end
-                        
+
                         cfgUISecure('statecleanup'); % Clean up UI functions based on state
                     otherwise
                         if CFG.debug
@@ -333,33 +343,35 @@ end
         end
     end
 
-    function addSnglClickCB(src,evt,currTbl)
+    function addUITblPlotCB(src,evt,currTbl)
+        if isfield(evt,'Key') % Evaluate event type
+            if any(strcmp(evt.Key,{'downarrow','uparrow'})) % Evaluate appropriate key press
+                jTbl = findjobj(src);
+                jTbl = jTbl.getViewport.getView;
+                selRow = double(jTbl.getSelectedRows + 1); % Returns 0-indexed int32
+            else
+                return;
+            end
+        else
+            selRow = double(src.getSelectedRows + 1); % Returns 0-indexed int32
+        end
+        
         % Turn off for Matlab loading time
         set(findobj(CFG.handles.hLui(3)),'Enable','off');
         set(findobj(CFG.handles.hLui(4)),'Enable','off');
         
-        selRow = double(src.getSelectedRows + 1); % Returns 0-indexed int32
+        % Sync table selections, a little delayed.  Possible to group.
+        javaMethodEDT('setRowSelectionInterval',jtableInit,(selRow-1),(selRow-1)); % Set with 0-index
+        javaMethodEDT('setRowSelectionInterval',jTableFin,(selRow-1),(selRow-1)); % Set with 0-index
+        
         selRow = selRow(1); % First selection only
-        set(currTbl,'UserData',selRow); % For cfgIlabJavaInterface.m, to pull row and table with row (not empty, and cleared after to determine this).  
+        set(currTbl,'UserData',selRow); % For cfgIlabJavaInterface.m, cfgUISecure('plottoilabmain'), and cfgUISecure('updateIlabUI'), to pull row and table with row (not empty, and cleared after to determine this).
         cfgUISecure('updateilabui'); % Update ILAB UI, Pass only one selected row at a time
-        cfgUISecure('clearuitableud'); % Keep table UserData clear
-                
+        
         % Initial/final saccade windows
         iWin = [CFG.initial.list(selRow,3) CFG.initial.list(selRow,4)];
         fWin = [CFG.final.list(selRow,3) CFG.final.list(selRow,4)];
         
-        % Delay and feedback event timestamps
-        it0 = CFG.initial.t0(selRow);
-        ft0 = CFG.final.t0(selRow);
-        
-        if CFG.debug
-            fprintf('cfgSaccCB (addSnglClickCB): Initial window, %6.0f.\n',iWin);
-            fprintf('cfgSaccCB (addSnglClickCB): Final window, %6.0f.\n',fWin);
-            fprintf('cfgSaccCB (addSnglClickCB): Delay event, %6.0f.\n',it0);
-            fprintf('cfgSaccCB (addSnglClickCB): Feedback event, %6.0f.\n',ft0);
-        end
-        
-       
         % Format and display for jFrame
         wndwTxtVals = {['Initial - ' num2str(iWin(1)*CFG.acqIntvl) ', Final - ' num2str(fWin(1)*CFG.acqIntvl)], ...
             ['Initial - ' num2str(iWin(2)*CFG.acqIntvl) ', Final - ' num2str(fWin(2)*CFG.acqIntvl)]}; % Values, remain in milliseconds
@@ -367,101 +379,15 @@ end
         
         % Update CFGDT.confirmJFrame
         CFGDT.confirmTxtFnc(CFGDT.confirmJFrame);
-            
-        % Format index appropriately, with acqIntvl or absolute for PP
-        % plotting
         
-        PP = ilabGetPlotParms; % Use accessor method to update pupil
-        
-        %% From ilabPlotSaccade.m
-        % Modified slightly
-        
-        %         % find and delete old saccades
-        %         oldsacc = findobj('Tag','saccades');
-        %         delete(oldsacc)
-        
-        % find the xytimeplotaxis
-        for i = 1:length(PP.XYPLOT_TAG)
-            Axy(i) = findobj('Tag',PP.XYPLOT_TAG{i});
-            axes(Axy(i))
-            hold on
-        end
-        
-        % Get acquisition interval
-        acqIntvl = CFG.acqIntvl;
-        acqIntvl = acqIntvl/1000;          % convert from ms to sec
+        cfgUISecure('plottoilabmain'); % Plot with selected row
+        cfgUISecure('clearuitableud'); % Keep table UserData clear
                        
-        % Get pixels per degree
-        [hPPD, vPPD] = ilabPixelsPerDegree;
-        
-        % get origin for degrees
-        degOrigin = PP.coordGrid.degOrigin;
-        
-        % get ShowCoordGridPopup value
-        hCGpop = findobj('Tag','ShowCoordGridPop');
-        if get(hCGpop,'Value') == 3 | get(hCGpop,'Value') == 5
-            deg = 1;
-        else
-            deg = 0;
-        end
-        
-        % Formatted data for loop
-        windows = [iWin;fWin];
-        evts = [it0;ft0];
-        col = {'g','c'};
-        
-        for saccif = 1:2 % Loop through one initial and one final
-            if any(~isnan(windows(saccif,:))) % If exists
-                
-                % Shift relative to start of PP.index (because that's how PP.data is structured)
-                % Shift start index back 1, because slider index already accounts
-                % for first index value
-                absIndex = (PP.index(selRow,1)-1) + windows(saccif,:); % 
-                trialx = PP.data(absIndex(1):absIndex(2),1); % X-coord data within window
-                trialy = PP.data(absIndex(1):absIndex(2),2); % Y-coord data within window
-                
-                % Amplitudes based on degree setting
-                if deg
-                    datH = (trialx - degOrigin(1)) / hPPD;
-                    datV = (trialy - degOrigin(2)) / vPPD;
-                else
-                    datH = trialx;
-                    datV = trialy;
-                end
-                
-                % Take pupil plotting into account
-                if length(Axy) == 2
-                    axes(Axy(1))
-                    yLim = get(Axy(1),'YLim'); % Get Y limits for event plotting
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,col{saccif}); % Plot saccade
-                    
-                    axes(Axy(2))
-                    yLim = get(Axy(2),'YLim'); % Get Y limits for event plotting
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,col{saccif}); % Plot saccade
-                else
-                    axes(Axy)
-                    yLim = get(Axy,'YLim');
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event                  
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,col{saccif}); % Plot saccade
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,col{saccif}); % Plot saccade
-                end
-         
-            end
-        end
-        
-        for i = 1:length(Axy)
-            axes(Axy(i))
-            hold off
-        end
-        
-        drawnow;
-        
         % Turn on after Matlab loading time
         set(findobj(CFG.handles.hLui(3)),'Enable','on');
         set(findobj(CFG.handles.hLui(4)),'Enable','on');
-        %%
-    end  
+        
+        drawnow;
+        figure(findobj('Tag',CFG.CFG_TAGS{2})); % Assuming called from cfg_datatool
+    end
 end
