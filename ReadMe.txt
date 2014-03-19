@@ -1,3 +1,11 @@
+Author: Ken Hwang, M.S.
+Contact: ken.r.hwang@gmail.com
+Repository: https://github.com/krh5058/cfg_datatool
+Last Updated: 3/18/14
+
+More comprehensive documentation found in Google Docs and commit text:
+https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
+
 Usage:
 
 	Set-up
@@ -46,7 +54,7 @@ Menu:
 	
 	Plot
 	"Plot CFG":
-		- Allows user to single-click on "cfg_datatool" tables, which will plot existing saccade selections on the ILAB main window.
+		- Allows user to single-click or press up/down arrow keys on "cfg_datatool" tables, which will plot existing saccade selections on the ILAB main window.
 		- An attached frame displays the Initial and Final saccade window of the selection, and allows the user to cancel the plotting action.
 		- XY Time plots will highlight Initial saccades in green, and final saccades in cyan.
 		- Plots also draw the offset of the "Delay" period in a dashed, green vertical line, and the onset of the "Feedback" period in a dashed, cyan vertical line.  See "Necessary files" for more details on experimental trial presentation structure.
@@ -61,21 +69,11 @@ Menu:
 
 Dev Notes:
 
-Author: Ken Hwang, M.S.
-Contact: ken.r.hwang@gmail.com
-Repository: https://github.com/krh5058/cfg_datatool
-Last Updated: 3/18/14
-
-More comprehensive documentation found in Google Docs and commit text:
-https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
-
 Backburner feature requests:
 	Clearing saccades prior to “delay” event.
 		- Needs to happen after latency files have been added, so after saccade generation occurs.
 		- Warning, manipulates original saccade data
 		- See ilabEditSaccadeCB.m/updateSaccadeTbl(AP)
-	- Add/Modify function: Possible to add view changes to main UI plots while choosing which trial to add a saccade.  However, this is an additional automated feature and can be forgone if unnecessary
-		- Currently, saccade plotting is simply cleared.
 	- Dotted lines aligned with slider thumbs
 
 Implementation Considerations:
@@ -117,6 +115,7 @@ Known bugs:
 	- Plotting may glitch axis drawing if single clicks occur too rapidly
 	- Slider isn't 100% lined up with plot, due to track buffer
 	- Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
-	
+	- Using the keyboard to cycle through plotting too quickly will force the Matlab command line into focus.	
+
 	Toolbox environment
 	- Relocation of toolbox will cause pathing issues in previously saved files
