@@ -300,7 +300,7 @@ end
                         
                         % Set main window ui controls
                         cfgUISecure('mainuioff');
-%                         cfgUISecure('updateilabui'); % update ilab ui, pass only one selected row at a time
+                        %                         cfgUISecure('updateilabui'); % update ilab ui, pass only one selected row at a time
                         cfgIlabJavaInterface('setup');
                     case 'clear'
                         % Initial/final switch

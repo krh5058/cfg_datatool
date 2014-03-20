@@ -401,7 +401,8 @@ end
         % Formatted data for loop
         windows = [iWin;fWin];
         evts = [it0;ft0];
-        col = {'g','c'};
+        %         col = {'g','c'};
+        col = {[0 .7 0],[0 .7 .7]};
         
         for saccif = 1:2 % Loop through one initial and one final
             if any(~isnan(windows(saccif,:))) % If exists
@@ -426,20 +427,20 @@ end
                 if length(Axy) == 2
                     axes(Axy(1))
                     yLim = get(Axy(1),'YLim'); % Get Y limits for event plotting
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,col{saccif}); % Plot saccade
+                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,'--','Color',col{saccif}); % Plot event
+                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,'Color',col{saccif}); % Plot saccade
                     
                     axes(Axy(2))
                     yLim = get(Axy(2),'YLim'); % Get Y limits for event plotting
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,col{saccif}); % Plot saccade
+                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,'--','Color',col{saccif}); % Plot event
+                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,'Color',col{saccif}); % Plot saccade
                 else
                     axes(Axy)
                     yLim = get(Axy,'YLim');
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,col{saccif}); % Plot saccade
-                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,[col{saccif} ':']); % Plot event
-                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,col{saccif}); % Plot saccade
+                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,'--','Color',col{saccif}); % Plot event
+                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datH,'Color',col{saccif}); % Plot saccade
+                    plot([evts(saccif)/1000 evts(saccif)/1000],yLim,'--','Color',col{saccif}); % Plot event
+                    plot([windows(saccif,1):windows(saccif,2)]*acqIntvl,datV,'Color',col{saccif}); % Plot saccade
                 end
                 
             end
