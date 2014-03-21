@@ -64,8 +64,8 @@ if isempty(cfgWinHdl)
     m_analysis = uimenu(cfgWinHdl, 'Label', 'Analysis', 'Tag', CFG.CFG_MTAGS{5}{1});
     
     m_abt = uimenu(cfgWinHdl, 'Label', 'About', 'Tag', CFG.CFG_MTAGS{6}{1});
-    uimenu(m_abt, 'Label', 'Toolbox help', 'Tag', CFG.CFG_MTAGS{6}{2}, 'Callback','');
-    uimenu(m_abt, 'Label', 'About cfg_datatool', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{6}{3}, 'Callback','');
+    uimenu(m_abt, 'Label', 'Toolbox help', 'Tag', CFG.CFG_MTAGS{6}{2}, 'Callback',@showReadMeHTML);
+    uimenu(m_abt, 'Label', 'About cfg_datatool', 'Separator', 'on', 'Tag', CFG.CFG_MTAGS{6}{3}, 'Callback',@showAboutInfo);
     
     CFG.handles.menu = [m_file m_edit m_sacc m_plot m_analysis m_abt];
     
@@ -244,6 +244,39 @@ figure(cfgWinHdl);
                 set(spuiChildren(spuiIter),'Enable','off')
             end
         end 
+    end
+
+    function showReadMeHTML(src,evt)
+        p = mfilename('fullpath');
+        p = fileparts(p);
+        
+        if ispc
+            [status] = system(['start ' p filesep 'doc' filesep 'ReadMe.html']);
+        elseif isunix
+            [status] = system(['xdg-open ' p filesep 'doc' filesep 'ReadMe.html']); % Tested with Hammer, opens Firefox
+        end
+        
+        if status
+            msgbox('Help page cannot be opened at this time.  Refer to toolbox directory for more information.','cfg_datatool: Help','modal');
+        end
+        
+    end
+
+    function showAboutInfo(src,evt)
+        % p = mfilename('fullpath');
+        %  p = fileparts(p);
+        % fid = fopen(['start ' p filesep 'doc' filesep 'ReadMe.html']);
+        
+        info = ['This user interface was requested by Charles F. Geier''s lab on November 21, 2014.\n\n', ...
+            'The purpose of the cfg_datatool toolbox is to aid ', ...
+            'the process of saccade selection and analysis within the ILAB software package.', ...
+            ' This toolbox provides several Java/Jidesoft features for more efficient workflow, ', ...
+            'as well as automating data processing customized to the lab''s experimental procedure.\n\n', ...
+            'Author: Ken Hwang, M.S.\n', ...
+            'Contact: ken.r.hwang@gmail.com\n', ...
+            'Last Updated: March 21, 2014'];
+
+        msgbox(sprintf(info),'cfg_datatool: About','modal');
     end
 
     function closeFcn(src,evt)

@@ -1,3 +1,4 @@
+function cfg_datatool
 % cfg_datatool.m
 % 3/12/14
 % Author: Ken Hwang
@@ -21,7 +22,7 @@ end
 ILAB = ilabGetILAB; % Keep accessor function
 AP = ilabGetAnalysisParms; % Keep accessor function
 PP = ilabGetPlotParms; % Keep accessor function
-    
+
 if isempty(AP.saccade.list) || isempty(AP.saccade.table)
     h = warndlg(['Please generate saccade table first (Analysis > Saccades...).'],'cfg_datatool WARNING');
     uiwait(h);
@@ -52,3 +53,4 @@ end
 
 % Display is default cfgShow call (moving parts only)
 cfgShow;
+end

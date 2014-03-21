@@ -121,7 +121,6 @@ Implementation Considerations:
 			- File manager for GNOME desktop enviroment is Nautilus
 			- Default web browser is Mozilla Firefox
 			- "module load matlab/R2011b" to switch Matlab versions
-			- Depending on server node, there may be issues with running system commands or video memory (JVM or GNOME desktop fails).
 
 Known bugs:
 
@@ -139,3 +138,4 @@ Known bugs:
 
 	Toolbox environment
 	- Relocation of toolbox will cause pathing issues in previously saved files
+	- Depending on server node, there may be issues with running system commands or video memory (JVM or GNOME desktop fails).
