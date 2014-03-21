@@ -1,41 +1,47 @@
 Author: Ken Hwang, M.S.
 Contact: ken.r.hwang@gmail.com
 Repository: https://github.com/krh5058/cfg_datatool
-Last Updated: 3/18/14
-
-More comprehensive documentation found in Google Docs and commit text:
+More comprehensive documentation found in Google Docs:
 https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
+Last Updated: 3/21/14
+
+Compatibility:
+
+	Matlab version: R2011b
+	Java version: 1.6.0_17-b04
+	ILAB version: 3.6.4
+	Toolbox version: 0.9
 
 Usage:
 
 	Set-up
-	1. Place cfg_datatool in ILAB-3.6.4/Toolbox
+	1. Locate your ILAB Toolbox directory (../ILAB-3.6.4/Toolbox) and place cfg_datatool in this directory.
 	2. For best performance, run with multiple screens.
 	3. For best performance, place the ILAB main window, "Saccade Results", and the "cfg_datatool" main window side-by-side with little overlap.
 
 	Necessary files
-	.eyd eye data.  Other eye-tracking data may work, but currently on ASL output has been tested.  See cfg_datatool/examples.
+	.eyd eye data.  Other eye-tracking data may work, but currently only ASL output has been tested.  See cfg_datatool/examples.
 	.xlsx or .xls trial data.  This data must formatted in a 5-column, and rows must be in consecutive, unique trial order.  XLSX used for PC.  XLS used for Unix systems.  See cfg_datatool/examples for formatting specifics.
 
 	Initialization
-	1. Start-up "ilab" within Matlab
+	1. Run "ilab" at the Matlab command line
 	2. Convert and format eye tracking data
-	3. Perform "Analysis" > "Saccades...".  Choose parameters and hit "OK".
-	4. Run "File" > "Toolboxes" > "cfg_datatool".
+	3. Perform "Analysis" > "Saccades...".  Choose parameters and hit "OK"
+	4. Run "File" > "Toolboxes" > "cfg_datatool"
 	5. Begin data analysis by "File" > "Import trial data", or "Load cfg_datatool workspace" (if previously saved)
 	
 Menu:
 
 	File
-	"Import data file": Load an Excel file containing formatted experimental trial data.
-	"Export" > "cfg_datatool saccades": Exports an XLSX (PC) or CSV (Unix) file in the cfg_datatool/export directory.
-	"Export" > "Open export folder": Opens the folder where export files are placed.
+	"Import trial data": Load an Excel file containing formatted experimental trial data.  XLSX for PC or XLS for Linux.
+	"Export..." > "cfg_datatool saccades": Exports an XLSX (PC) or CSV (Linux) file in the ../cfg_datatool/export directory.
+	"Export..." > "Open export folder": Opens the ../cfg_datatool/export folder where exported files are placed.
 	"Save cfg_datatool workspace": Saves a .mat file of the current cfg_datatool dataset.  Stored in cfg_datatool/usr.
 	"Load cfg_datatool workspace": Loads a previously saved .mat file of a cfg_datatool dataset.  User is prompted to select from cfg_datatool/usr.
-	"Exit": Close cfg_datatool.
+	"Exit": Closes cfg_datatool.
 	
 	Edit
-	"Parameters": View parameters which "Analysis" > "Saccades..." was performed.  (Editting may be added in the future.)
+	"Parameters": View parameters which "Analysis" > "Saccades..." was performed.  (Editing may be added in the future.)
 	
 	Saccade
 	"Select": 
@@ -44,10 +50,10 @@ Menu:
 		- Double-clicking on a selection will prompt the user to specify if it is an "Initial" or "Final" type saccade (or they can cancel).
 		- An attached frame also allows the user to see the Saccade Window selected in milliseconds, or allow them to cancel the "Select" function.
 	"Add/Modify":
-		- The user must double-click on one of the "cfg_datatool" tables to specify the saccade trial and type (Initial/Final) they would like to add to or modify from.
+		- User must double-click on one of the "cfg_datatool" tables to specify the saccade trial and type (Initial/Final) they would like to add to or modify from.
 		- Upon selection, a rangeslider will appear on the ILAB main window.  Use the rangeslider to specify the saccade window's start and end.  The selected section will highlight yellow on the XY time plots.
-		- Compatible if "Pupil" is selected on or off.
-		- An attached frame displays the currently selected saccade window (milliseconds) and an option to Confirm the current slider range or Cancel the action.
+		- Using the "Pupil" checkbox will adjust XY plots to the upper axis and the pupil plot to the lower axis.  You will need to adjust the slider to update these plots when "Pupil" is selected on or off.
+		- An attached frame displays the currently selected saccade window (milliseconds) and an option to confirm the current slider range or cancel the action.
 	"Clear":
 		- The user must double-click on one of the "cfg_datatool" tables to specify the saccade trial and type (Initial/Final) they would like to clear.
 		- After selection, a prompt will appear to verify user selection.
@@ -64,44 +70,58 @@ Menu:
 	- Has not been implemented yet.
 
 	About
-	"Toolbox help": Displays this help file.0
+	"Toolbox help": Displays this help file.
 	"About cfg_datatool": Additional toolbox information.
 
-Dev Notes:
+Developer's Notes:
 
-Backburner feature requests:
-	Clearing saccades prior to “delay” event.
+Back-burner feature requests:
+	- Removing saccades prior to “delay” event
 		- Needs to happen after latency files have been added, so after saccade generation occurs.
 		- Warning, manipulates original saccade data
 		- See ilabEditSaccadeCB.m/updateSaccadeTbl(AP)
 	- Dotted lines aligned with slider thumbs
 
 Implementation Considerations:
-	Platform Specs:
-		- Java Heap Size: 1082
-		- File > Preferences > General > Java Heap Memory
-		- Developed on 1680x1050 resolution screen
+	- Development Platform Specifications
+		- Operating System
+			- Windows 7 Professional
+		- Processor		
+			- Intel(R) Core(TM) i5-2400 CPU @ 3.10 GHz
+		- Memory
+			- 8.00 GB RAM
+		- System Type
+			- 64-bit Operating System
+		- Matlab Java Heap Size
+			- 1082 MB
+		- Resolution
+			- 1680x1050 (main) and 1920x1080 (secondary)
+		- UI Display
 			- Positioned bottom of window at 15% total screen height from bottom of screen
 			- Positioned total height of window to be 85% total screen height
-	- Hammer Specs
+	- Hammer Specifications
+		- Operating System
+			- Red Hat Enterprise Linux Server release 5.10 (Tikanga)
+		- Processor
+			- Intel(R) Xeon(R) CPU X5670 @ 2.93 GHz
+		- Memory
+			- 94.41 GB RAM
+		- Host Name
 			- hammer.rcc.psu.edu
-			- Testing with remote desktop client, Exceed OnDemand
-				- Xconfig: Seamless_Mode.cfg
-				- Xstart: Gnome_Desktop.xs
-				- Sometimes, Gnome desktop fails.  Sometimes does not allow windows outside of display screen.
-			- "module load matlab/R2011b"
-			- Current directory: /gpfs/home/krh5058/MATLAB/cfg_datatool
-	- Hoth Specs
-			- hoth.imaging.psu.edu
-			- Testing with PuTTy client and Xming server port 22
-				- :0 -clipboard -multiwindow
-- Matlab Specs
-	- ILAB 3.6.4
-	- version -java
-		Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) Client VM mixed mode
-	- JIDE compatibility
-- Assumed Excel compatibility
-	- Not for Hammer
+		- Port
+			- 22
+		- Remote desktop client
+			- Exceed OnDemand
+			- Xconfig: Seamless_Mode.cfg
+			- Xstart: Gnome_Desktop.xs
+		- Current directory: 
+			- /gpfs/home/krh5058/MATLAB/cfg_datatool
+		- Software Compatibility
+			- No Excel COM server
+			- File manager for GNOME desktop enviroment is Nautilus
+			- Default web browser is Mozilla Firefox
+			- "module load matlab/R2011b" to switch Matlab versions
+			- Depending on server node, there may be issues with running system commands or video memory (JVM or GNOME desktop fails).
 
 Known bugs:
 
@@ -111,7 +131,7 @@ Known bugs:
 	- Instituting another "Saccade Results" (and setting an additional set of saccade parameters) results in loss of underlying data models or UI states.
 	
 	UI Components
-	- cfg_datatool tables sometimes appear glitchy or update slow
+	- "cfg_datatool" tables sometimes appear glitchy or update slow
 	- Plotting may glitch axis drawing if single clicks occur too rapidly
 	- Slider isn't 100% lined up with plot, due to track buffer
 	- Confirm window is locked to upper right of ILAB windows.  If ILAB window is maximized, confirm window will be off-screen.
