@@ -263,18 +263,39 @@ figure(cfgWinHdl);
     end
 
     function showAboutInfo(src,evt)
-        % p = mfilename('fullpath');
-        %  p = fileparts(p);
-        % fid = fopen(['start ' p filesep 'doc' filesep 'ReadMe.html']);
+        p = mfilename('fullpath');
+        p = fileparts(p);
+        fid = fopen([p filesep 'doc' filesep 'ReadMe.html']);
         
         info = ['This user interface was requested by Charles F. Geier''s lab on November 21, 2014.\n\n', ...
             'The purpose of the cfg_datatool toolbox is to aid ', ...
             'the process of saccade selection and analysis within the ILAB software package.', ...
             ' This toolbox provides several Java/Jidesoft features for more efficient workflow, ', ...
-            'as well as automating data processing customized to the lab''s experimental procedure.\n\n', ...
-            'Author: Ken Hwang, M.S.\n', ...
-            'Contact: ken.r.hwang@gmail.com\n', ...
-            'Last Updated: March 21, 2014'];
+            'as well as automating data processing customized to the lab''s experimental procedure.\n\n'];
+        
+        auth = '';
+        contact = '';
+        update = '';
+        
+        while any(cellfun(@isempty,{auth,contact,update}))
+            thisLine = fgetl(fid);
+            includeText = regexp(thisLine,'authText|contactText|updateText','match');
+            if ~isempty(includeText)
+                temp = regexp(thisLine,'[>][^/]+[<]','match');
+                switch includeText{1}
+                    case 'authText'
+                        auth = temp{1}(2:end-1);
+                    case 'contactText'
+                        temp = regexp(temp{1},'[<][^/]+[>]','split');
+                        temp = [temp{1} temp{2}];
+                        contact = temp(2:end-1);
+                    case 'updateText'
+                        update = temp{1}(2:end-1);
+                end
+            end
+        end
+        
+        info = [info auth '\n' contact '\n' update '\n'];
 
         msgbox(sprintf(info),'cfg_datatool: About','modal');
     end

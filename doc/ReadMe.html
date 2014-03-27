@@ -10,18 +10,19 @@
 		<li><a href="#intro">General</a>
 		<li><a href="#comp">Compatibility</a>
 		<li><a href="#usage">Usage</a></li>
-		<li><a href="#menu">Menu</a></li>		
+		<li><a href="#menu">Menu</a></li>	
+		<li><a href="#output">Output</a></li>
 		<li><a href="#dev">Developer's Notes</a></li>
 		<li><a href="#bugs">Known Bugs</a></li>
 	</div>
 
 	<h1 id="intro">I. General</h1>
 	<p>
-		Author: Ken Hwang<br>
-		Contact: <a href="mailto:ken.r.hwang@gmail.com?Subject=CFG_Datatool" target="_top">ken.r.hwang@gmail.com</a><br>
+		<span id="authText">Author: Ken Hwang, M.S.</span><br>
+		<span id="contactText">Contact: <a href="mailto:ken.r.hwang@gmail.com?Subject=CFG_Datatool" target="_top">ken.r.hwang@gmail.com</a></span><br>
 		Repository: <a href="https://github.com/krh5058/cfg_datatool">GitHub</a><br>
 		Comprehensive Notes: <a href="https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing">Google Docs</a><br>
-		Last updated: March 21, 2014<br>
+		<span id="updateText">Last updated: March 27, 2014</span><br>
 	</p>
 	
 	<h1 id="comp">II. Compatibility</h1>	
@@ -73,7 +74,7 @@
 		<li>Run &quot;ilab&quot; at the Matlab command line</li>
 		<li>Convert and format eye tracking data</li>
 		<li>Perform &quot;Analysis&quot; > &quot;Saccades...&quot;.  Choose parameters and hit &quot;OK&quot;</li>
-		<li>Run "File" > "Toolboxes" > "cfg_datatool"</li>
+		<li>Run "File" > "Toolboxes" > &quot;cfg_datatool&quot;</li>
 		<li>Begin data analysis by &quot;File&quot; > &quot;Import trial data&quot;, or &quot;Load cfg_datatool workspace&quot; (if previously saved)</li>
 	</ol>
 	
@@ -113,24 +114,24 @@
 		<dl>
 			<dt><dfn>Select</dfn></dt>
 			<dd>
-			Select from a saccade from the "Saccade Results" window.<br>
-			Single clicks on the "Saccade Results" window will automatically plot the 
+			Select from a saccade from the &quot;Saccade Results&quot; window.<br>
+			Single clicks on the &quot;Saccade Results&quot; window will automatically plot the 
 			saccades to the ILAB main window, with the Auto-plot feature.<br>
 			Double-clicking on a selection will prompt the user to specify if it is an 
-			"Initial" or "Final" type saccade (or they can cancel).<br>
+			&quot;Initial&quot; or &quot;Final&quot; type saccade (or they can cancel).<br>
 			An attached frame also allows the user to see the Saccade Window selected in 
-			milliseconds, or allow them to cancel the "Select" function.<br>
+			milliseconds, or allow them to cancel the &quot;Select&quot; function.<br>
 			</dd>
 			<dt><dfn>Add/Modify</dfn></dt>
 			<dd>
-			User must double-click on one of the "cfg_datatool" tables to specify the saccade trial and type (Initial/Final) they would like to add to or modify from.<br>
+			User must double-click on one of the &quot;cfg_datatool&quot; tables to specify the saccade trial and type (Initial/Final) they would like to add to or modify from.<br>
 			Upon selection, a rangeslider will appear on the ILAB main window.  Use the rangeslider to specify the saccade window's start and end.  The selected section will highlight yellow on the XY time plots.<br>
-			Using the "Pupil" checkbox will adjust XY plots to the upper axis and the pupil plot to the lower axis.  You will need to adjust the slider to update these plots when "Pupil" is selected on or off.<br>
+			Using the &quot;Pupil&quot; checkbox will adjust XY plots to the upper axis and the pupil plot to the lower axis.  You will need to adjust the slider to update these plots when &quot;Pupil&quot; is selected on or off.<br>
 			An attached frame displays the currently selected saccade window (milliseconds) and an option to confirm the current slider range or cancel the action.<br>
 			</dd>
 			<dt><dfn>Clear</dfn></dt>
 			<dd>
-			The user must double-click on one of the "cfg_datatool" tables to specify the 
+			The user must double-click on one of the &quot;cfg_datatool&quot; tables to specify the 
 			saccade trial and type (Initial/Final) they would like to clear.<br>
 			After selection, a prompt will appear to verify user selection.<br>
 			</dd>
@@ -139,16 +140,16 @@
 		<dl>
 			<dt><dfn>Plot CFG</dfn></dt>
 			<dd>
-			Allows user to single-click or press up/down arrow keys on "cfg_datatool" 
+			Allows user to single-click or press up/down arrow keys on &quot;cfg_datatool&quot; 
 			tables, which will plot existing saccade selections on the ILAB main window.
 			<br>
 			An attached frame displays the Initial and Final saccade window of the 
 			selection, and allows the user to cancel the plotting action.<br>
 			XY Time plots will highlight Initial saccades in green, and final saccades in 
 			cyan.<br>
-			Plots also draw the offset of the "Delay" period in a dashed, green vertical 
-			line, and the onset of the "Feedback" period in a dashed, cyan vertical line.  
-			See "Necessary files" for more details on experimental trial presentation 
+			Plots also draw the offset of the &quot;Delay&quot; period in a dashed, green vertical 
+			line, and the onset of the &quot;Feedback&quot; period in a dashed, cyan vertical line.  
+			See &quot;Necessary files&quot; for more details on experimental trial presentation 
 			structure.<br>
 			Plots remain on ILAB window after plotting action has finished, until any UI 
 			items are changed.<br>
@@ -173,7 +174,74 @@
 	
 	<a href="#top">Go to Table of Contents</a>
 	
-	<h1 id="dev">V. Developer's Notes</h1>
+	<h1 id="output">V. Output</h1>
+		<dl>
+			<dt><dfn>Trial</dfn></dt>
+			<dd>
+			Number of each trial
+			</dd>
+			<dt><dfn>Start Code</dfn></dt>
+				<dd>
+				Start code determined by ILAB, which is typically 50.
+				</dd>
+			<dt><dfn>Target Code</dfn></dt>
+				<dd>
+				Designated trial codes determined by ILAB.
+				</dd>
+			<dt><dfn>Trial Type</dfn></dt>
+				<dd>
+				Trial type identifier.
+				</dd>
+			<dt><dfn>Start (ms)</dfn></dt>
+				<dd>
+				Start of saccade relative to beginning of the trial.
+				</dd>				
+			<dt><dfn>End (ms)</dfn></dt>
+				<dd>
+				End of saccade relative to beginning of the trial.
+				</dd>				
+			<dt><dfn>Peak velocity (deg/s)</dfn></dt>
+				<dd>
+				Maximum velocity within the saccade interval.
+				</dd>
+			<dt><dfn>Mean velocity (deg/s)</dfn></dt>
+				<dd>
+				Average velocity across the saccade interval.
+				</dd>				
+			<dt><dfn>Saccade reaction time (ms)</dfn></dt>
+				<dd>
+				Beginning of saccade relative to the target time event, which is the end 
+				of the &quot;Delay&quot; event for Initial saccades and the end of the 
+				&quot;Saccade&quot; event for Final saccades.
+				</dd>			
+			<dt><dfn>Time to peak (ms)</dfn></dt>
+				<dd>
+				Peak velocity within the saccade interval relative to the target time 
+				event, which is the end of the &quot;Delay&quot; event for Initial 
+				saccades and the end of the &quot;Saccade&quot; event for Final saccades.
+				</dd>
+			<dt><dfn>Distance travelled (deg)</dfn></dt>
+				<dd>
+				Total distance travelled during the saccade interval, which is calculated 
+				by multiplying the mean velocity by the total interval duration.
+				</dd>
+			<dt><dfn>Distance from Target (pix)</dfn></dt>
+				<dd>
+				Absolute distance from target along the X-axis.
+				</dd>
+			<dt><dfn>Dropped Trial</dfn></dt>
+				<dd>
+				Marks the trial as dropped as either True or False.
+				</dd>
+			<dt><dfn>Erred Trial</dfn></dt>
+				<dd>
+				Marks the saccade as error as either True or False.
+				</dd>
+		</dl>
+	
+	<a href="#top">Go to Table of Contents</a>
+	
+	<h1 id="dev">VI. Developer's Notes</h1>
 	<h2>Back-burner Feature Requests</h2>
 	<ul>
 		<li>Removing saccades prior to &quot;delay&quot; event</li>
@@ -221,7 +289,7 @@
 				<dd>Xconfig: Seamless_mode.cfg</dd>
 				<dd>Xstart: Gnome_Desktop.xs</dd>
 			<dt>Current Directory<dt>
-				<dd>/gpfs/home/krh5058/MATLAB/cfg_datatool</dd>
+				<dd>/gpfs/group/sleic/cfg2/cfg_datatool</dd>
 			<dt>Software Compatibilty<dt>
 				<dd>No Excel COM server</dd>
 				<dd>File manager for GNOME desktop enviroment is Nautilus</dd>
@@ -233,7 +301,7 @@
 
 	<a href="#top">Go to Table of Contents</a>
 	
-	<h1 id="bugs">VI. Known Bugs</h1>
+	<h1 id="bugs">VII. Known Bugs</h1>
 	<h2>ILAB-related</h2>
 	<ul>
 		<li>Closing either &quot;cfg_datatool&quot; or &quot;Saccade Results&quot; windows typically results in loss of 

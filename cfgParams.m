@@ -64,7 +64,7 @@ if strcmpi(action, 'init')
     CFG.trialXPosVector = NaN([CFG.trials 1]);
     
     % Table info
-    CFG.cfgHeaders = {'Start Code', 'Target Code', 'Trial Type', 'Start (ms)', 'End (ms)', 'Peak vel (deg/s)', 'Mean vel (deg/s)', 'SRT (ms)', 'Time-to-peak (ms)', 'DistTrav (deg)', 'DistTarg (deg)', 'Drop', 'Error'};
+    CFG.cfgHeaders = {'Start Code', 'Target Code', 'Trial Type', 'Start (ms)', 'End (ms)', 'Peak vel (deg/s)', 'Mean vel (deg/s)', 'SRT (ms)', 'Time-to-peak (ms)', 'DistTrav (deg)', 'DistTarg (pix)', 'Drop', 'Error'};
     CFG.cfgFormat = {'numeric','numeric','char','bank','bank','numeric','numeric','bank','bank','numeric','numeric','logical','logical'};
     CFG.cfgEditTable = [false false false false false false false false false false false true true];
     CFG.cfgInitEmpty = {NaN,NaN,'',NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,false,false};

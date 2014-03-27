@@ -3,7 +3,7 @@ Contact: ken.r.hwang@gmail.com
 Repository: https://github.com/krh5058/cfg_datatool
 More comprehensive documentation found in Google Docs:
 https://docs.google.com/document/d/1x2icPghAkzCE96eYO8GJe4FN3XksnORehLECbDpic-w/edit?usp=sharing
-Last Updated: 3/21/14
+Last Updated: 3/27/14
 
 Compatibility:
 
@@ -73,6 +73,36 @@ Menu:
 	"Toolbox help": Displays this help file.
 	"About cfg_datatool": Additional toolbox information.
 
+Output:
+	Trial
+		- Number of each trial
+	Start Code
+		- Start code determined by ILAB, which is typically 50.
+	Target Code
+		- Designated trial codes determined by ILAB.
+	Trial Type
+		- Trial type identifier.
+	Start (ms)
+		- Start of saccade relative to beginning of the trial.
+	End (ms)
+		- End of saccade relative to beginning of the trial.
+	Peak velocity (deg/s)
+		- Maximum velocity within the saccade interval.
+	Mean velocity (deg/s)
+		- Average velocity across the saccade interval.
+	Saccade reaction time (ms)
+		- Beginning of saccade relative to the target time event, which is the end of the "Delay" event for Initial saccades and the end of the "Saccade" event for Final saccades.
+	Time to peak (ms)
+		- Peak velocity within the saccade interval relative to the target time event, which is the end of the "Delay" event for Initial saccades and the end of the "Saccade" event for Final saccades.
+	Distance travelled (deg)
+		- Total distance travelled during the saccade interval, which is calculated by multiplying the mean velocity by the total interval duration.
+	Distance from Target (pix)
+		- Absolute distance from target along the X-axis.
+	Dropped Trial
+		- Marks the trial as dropped as either True or False.
+	Erred Trial
+		- Marks the saccade as erred as either True or False.
+
 Developer's Notes:
 
 Back-burner feature requests:
@@ -115,7 +145,7 @@ Implementation Considerations:
 			- Xconfig: Seamless_Mode.cfg
 			- Xstart: Gnome_Desktop.xs
 		- Current directory: 
-			- /gpfs/home/krh5058/MATLAB/cfg_datatool
+			- /gpfs/group/sleic/cfg2/cfg_datatool
 		- Software Compatibility
 			- No Excel COM server
 			- File manager for GNOME desktop enviroment is Nautilus
